@@ -25,12 +25,12 @@
       naddr = nip19.naddrEncode({
         identifier: b.identifier,
         pubkey: b.pubkey,
-        kind: 30023
+        kind: 35000
       });
       let e = await $ndk.fetchEvent({
         '#d': [b.identifier],
         authors: [b.pubkey],
-        kinds: [30023]
+        kinds: [35000]
       });
       if (e) {
         event = e;

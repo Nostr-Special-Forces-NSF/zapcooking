@@ -69,7 +69,7 @@
         resultMessage = `Error: No Image Uploaded`;
       } else if (va) {
         previewEvent = new NDKEvent($ndk);
-        previewEvent.kind = 30023;
+        previewEvent.kind = 35000;
         previewEvent.content = md;
         previewEvent.tags.push(['d', title.toLowerCase().replaceAll(' ', '-')]);
         previewEvent.tags.push(['title', title]);
@@ -114,7 +114,7 @@
         resultMessage = `Error: No Image Uploaded`;
       } else if (va) {
         const event = new NDKEvent($ndk);
-        event.kind = 30023;
+        event.kind = 35000;
         event.content = md;
         event.tags.push(['d', title.toLowerCase().replaceAll(' ', '-')]);
         event.tags.push(['title', title]);
@@ -147,7 +147,7 @@
         const naddr = nip19.naddrEncode({
           identifier: title.toLowerCase().replaceAll(' ', '-'),
           pubkey: event.author.hexpubkey,
-          kind: 30023
+          kind: 35000
         });
         setTimeout(() => {
           goto(`/recipe/${naddr}`);

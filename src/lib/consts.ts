@@ -1,5 +1,5 @@
 export const standardRelays = [
-  'wss://kitchen.zap.cooking',
+  'wss://nsf.testrelay.xyz',
   //'wss://nostr.mom',
   //'wss://relay.nostr.bg',
   //'wss://nostr.wine',

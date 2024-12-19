@@ -34,7 +34,7 @@
   let events: NDKEvent[] = [];
 
   onMount(async () => {
-    let filter: NDKFilter = { limit: 256, kinds: [30023], '#t': ['nostrcooking'] };
+    let filter: NDKFilter = { limit: 256, kinds: [35000] };
     const evts = await $ndk.fetchEvents(filter);
     let evtsArr = Array.from(evts);
     evtsArr.forEach((ev, i) => {
@@ -66,7 +66,9 @@
 <div class="flex flex-col gap-3 md:gap-10">
   <div class="hidden lg:flex w-screen gap-6 overflow-y-hidden overflow-x-auto">
     {#each popTags as tag}
-      <a class="flex transition duration-300 hover:text-primary" href="/tag/{tag.title}">{tag.title}</a>
+      <a class="flex transition duration-300 hover:text-primary" href="/tag/{tag.title}"
+        >{tag.title}</a
+      >
     {/each}
   </div>
 

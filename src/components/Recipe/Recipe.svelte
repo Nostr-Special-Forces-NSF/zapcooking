@@ -26,7 +26,7 @@
   const naddr = nip19.naddrEncode({
     identifier: event.replaceableDTag(),
     pubkey: event.pubkey,
-    kind: 30023
+    kind: 35000
   });
   let zapModal = false;
   let bookmarkModal = false;
@@ -118,7 +118,7 @@
   );*/
 </script>
 
-<ZapModal bind:open={zapModal} event={event} />
+<ZapModal bind:open={zapModal} {event} />
 
 <Modal cleanup={cleanUpBookmarksModal} open={bookmarkModal}>
   <h1 slot="title">Save Recipe</h1>
@@ -254,6 +254,22 @@
             </p>
           {/await}
         {:else}
+          {#if event.hasTag('summary')}
+            <h2>Chef's notes</h2>
+            <p>{event.tagValue('summary')}</p>
+          {/if}
+		  <h2>Details</h2>
+		  <ul>
+			<li>⏲️ Prep time: {event.tagValue('prep_time')} minutes</li>
+			<li>🍳 Cook time: {event.tagValue('cook_time')} minutes</li>
+			<li>🍽️ Servings: {event.tagValue('servings')}</li>
+		  </ul>
+		  <h2>Ingredients</h2>
+		  <ul>
+			{#each event.tags.filter(t => t[0] === 'ingredient') as tag}
+			<li>{tag[1]}</li>
+			{/each}
+		  </ul>
           {@html parseMarkdown(event.content)}
         {/if}
       </div>

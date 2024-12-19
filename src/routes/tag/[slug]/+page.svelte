@@ -26,8 +26,8 @@
     events = [];
     let filter: NDKFilter = {
       limit: 256,
-      kinds: [30023],
-      '#t': [`nostrcooking-${$page.params.slug.toLowerCase().replaceAll(' ', '-')}`]
+      kinds: [35000],
+      '#t': [`${$page.params.slug.replaceAll(' ', '-')}`]
     };
     const evts = await $ndk.fetchEvents(filter);
     let evtsArr = Array.from(evts);
