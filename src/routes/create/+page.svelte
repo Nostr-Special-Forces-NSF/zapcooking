@@ -73,8 +73,16 @@
         previewEvent.content = md;
         previewEvent.tags.push(['d', title.toLowerCase().replaceAll(' ', '-')]);
         previewEvent.tags.push(['title', title]);
-        previewEvent.tags.push(['t', 'nostrcooking']);
-        if (summary !== '') {
+        if(preptime !== '') {
+			previewEvent.tags.push(['prep_time', preptime]);
+		}
+		if(cooktime !== '') {
+			previewEvent.tags.push(['cook_time', cooktime]);
+		}
+		if(servings !== '') {
+			previewEvent.tags.push(['servings', servings]);
+		}
+		if (summary !== '') {
           previewEvent.tags.push(['summary', summary]);
         }
         if ($images.length > 0) {
@@ -82,6 +90,11 @@
             previewEvent.tags.push(['image', $images[i]]);
           }
         }
+		$ingredientsArray.forEach((i) => {
+			previewEvent?.tags.push(['ingredient', "i"]);
+		});
+
+
         $selectedTags.forEach((t) => {
           if (t.title) {
             previewEvent?.tags.push([
@@ -118,9 +131,11 @@
         event.content = md;
         event.tags.push(['d', title.toLowerCase().replaceAll(' ', '-')]);
         event.tags.push(['title', title]);
-        event.tags.push(['t', 'nostrcooking']);
+
+		event.tags.push(['t', 'nostrcooking']);
         event.tags.push(['t', `nostrcooking-${title.toLowerCase().replaceAll(' ', '-')}`]);
-        if (summary !== '') {
+
+		if (summary !== '') {
           event.tags.push(['summary', summary]);
         }
         if ($images.length > 0) {
@@ -133,7 +148,8 @@
             event.tags.push(['t', `nostrcooking-${t.title.toLowerCase().replaceAll(' ', '-')}`]);
           }
         });
-        console.log('event to publish:', event);
+
+		console.log('event to publish:', event);
         let relays = await event.publish();
         relays.forEach((relay) => {
           relay.once('published', () => {
@@ -146,7 +162,7 @@
         resultMessage = 'Success!';
         const naddr = nip19.naddrEncode({
           identifier: title.toLowerCase().replaceAll(' ', '-'),
-          pubkey: event.author.hexpubkey,
+          pubkey: event.author.pubkey,
           kind: 35000
         });
         setTimeout(() => {
@@ -179,7 +195,7 @@
 
   <div class="flex flex-col gap-2">
     <h3>Tags*</h3>
-    <span class="text-caption">Remember to make your title unique!</span>
+    <span class="text-caption">Choose from one of the predefined tags or create your own</span>
     <TagsComboBox {selectedTags} />
   </div>
 

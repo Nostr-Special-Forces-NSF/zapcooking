@@ -6,8 +6,8 @@
   export let events: NDKEvent[];
   export let hideHide = false;
   export let lists = false;
-  if (!lists)
-    events = events.filter((e) => typeof validateMarkdownTemplate(e.content) !== 'string');
+  //if (!lists)
+    //events = events.filter((e) => typeof validateMarkdownTemplate(e.content) !== 'string');
 </script>
 
 <svelte:head>
@@ -19,9 +19,7 @@
 >
   {#if events.length > 0}
     {#each events as event}
-      {#if !(hideHide == true && event.tags.find((t) => t[0] == 't' && t[1] == 'nostrcooking-hide'))}
         <RecipeCard list={lists} {event} />
-      {/if}
     {/each}
   {:else}
     {#each new Array(24) as i}

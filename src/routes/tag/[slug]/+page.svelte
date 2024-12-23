@@ -27,17 +27,11 @@
     let filter: NDKFilter = {
       limit: 256,
       kinds: [35000],
-      '#t': [`${$page.params.slug.replaceAll(' ', '-')}`]
+      '#t': [`${$page.params.slug.toLowerCase().replaceAll(' ', '-')}`],
     };
     const evts = await $ndk.fetchEvents(filter);
-    let evtsArr = Array.from(evts);
-    evtsArr.forEach((ev, i) => {
-      if (validateMarkdownTemplate(ev.content) == null) {
-        evtsArr.splice(i, 1);
-      }
-    });
-    events = evtsArr;
-    loaded = true;
+    events = Array.from(evts);
+	loaded = true;
   }
 </script>
 
