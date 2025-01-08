@@ -23,7 +23,7 @@
   let preptime = '';
   let cooktime = '';
   let servings = '';
-  let ingredientsArray: Writable<Array<[string, string]>> = writable([]); // Tuple: [amount, ingredient]
+  let ingredientsArray: Writable<Array<[string, string]>> = writable([]);
   let directionsArray: Writable<string[]> = writable([]);
 
   let resultMessage = ' ';
@@ -163,7 +163,7 @@
   <div class="flex flex-col gap-2">
     <h3>Brief Summary</h3>
     <textarea
-      placeholder="A brief description of the dish, chef’s notes"
+      placeholder="A brief description of the dish and chef’s notes"
       bind:value={summary}
       rows="6"
       class="input"

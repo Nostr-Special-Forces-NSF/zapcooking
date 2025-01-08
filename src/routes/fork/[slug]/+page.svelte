@@ -14,6 +14,7 @@
   import { goto } from '$app/navigation';
   import ImagesComboBox from '../../../components/ImagesComboBox.svelte';
   import Button from '../../../components/Button.svelte';
+  import TupleComboBox from '../../../components/TupleComboBox.svelte';
 
   $: {
     if ($page.params.slug) {
@@ -68,10 +69,7 @@
     }
     // @ts-ignore
     if (event) {
-      const va = validateMarkdownTemplate(event.content);
-      if (typeof va == 'string') {
-        resultMessage = `Error loading event to fork, error message: ${va}`;
-      } else if (va) {
+      if (event.content) {
         let titleTagValue = event.tags.find((e) => e[0] == 'title')?.[1];
         if (titleTagValue) title = titleTagValue;
         let summaryTagValue = event.tags.find((e) => e[0] == 'summary')?.[1];
@@ -84,92 +82,67 @@
           images.set($images); // svelte reactivity
         }
         selectedTags.set([]);
-        let tagTags = event.tags.filter(
-          (e) =>
-            e[0] == 't' &&
-            e[1].startsWith('nostrcooking-') &&
-            e[1].slice(13) !== event.tags.find((a) => a[0] == 'd')?.[1]
-        );
+        let tagTags = event.tags.filter((e) => e[0] == 't');
         tagTags.forEach((t) => {
-          addTag(t[1].slice(13));
+          addTag(t[1]);
         });
-        if (va.chefNotes) chefsnotes = va.chefNotes;
-        if (va.directions) {
-          let i = 0;
-          va.directions.forEach((e) => {
-            i++;
-            directions += `${i}. ${e}\n`;
-          });
-          $directionsArray = va.directions;
-        }
-        if (va.ingredients) {
-          va.ingredients.forEach((e) => {
-            ingredients += `- ${e}\n`;
-          });
-          $ingredientsArray = va.ingredients;
-        }
-        if (va.information?.cookTime) cooktime = va.information.cookTime;
-        if (va.information?.prepTime) preptime = va.information.prepTime;
-        if (va.information?.servings) servings = va.information.servings;
-        if (va.additionalMarkdown) additionalMarkdown = va.additionalMarkdown;
+
+        let directions = event.content
+          .split('\n')
+          .map((line) => line.trim().replace(/^\d+\.\s*/, ''))
+          .filter((line) => line.length > 0 && line.at(0) !== '#');
+
+        directionsArray.set(directions);
+
+        let ingredients = new Array<[string, string]>();
+        let ingredientTags = event.tags.filter((e) => e[0] === 'ingredient');
+        ingredientTags.forEach((e) => {
+          ingredients.push([e[2], e[1]]);
+        });
+        ingredientsArray.set(ingredients);
+
+        event.tags.forEach((e) => {
+          if (e[0] === 'cook_time') cooktime = e[1];
+          if (e[0] === 'prep_time') preptime = e[1];
+          if (e[0] === 'servings') servings = e[1];
+        });
       }
     }
-  }
-
-  function formatStringArrays() {
-    ingredients = '';
-    $ingredientsArray.forEach((e) => {
-      ingredients += `- ${e}\n`;
-    });
-    directions = '';
-    let i = 0;
-    $directionsArray.forEach((e) => {
-      i++;
-      directions += `${i}. ${e}\n`;
-    });
   }
 
   let title = '';
   let images: Writable<string[]> = writable([]);
   let selectedTags: Writable<recipeTagSimple[]> = writable([]);
   let summary = '';
-  let chefsnotes = '';
   let preptime = '';
   let cooktime = '';
   let servings = '';
-  let ingredientsArray: Writable<string[]> = writable([]);
-  let ingredients = ``;
+  let ingredientsArray: Writable<Array<[string, string]>> = writable([]);
   let directionsArray: Writable<string[]> = writable([]);
   let directions = ``;
-  let additionalMarkdown = '';
 
   let resultMessage = ' ';
   let disablePublishButton = false;
 
   async function loadPreview() {
-    formatStringArrays();
     if (browser) {
-      const md = createMarkdown(
-        chefsnotes,
-        preptime,
-        cooktime,
-        servings,
-        ingredients,
-        directions,
-        additionalMarkdown
-      );
-      const va = validateMarkdownTemplate(md);
-      if (typeof va == 'string') {
-        resultMessage = `Error: ${va}`;
-      } else if ($images.length == 0) {
+      if ($images.length == 0) {
         resultMessage = `Error: No Image Uploaded`;
-      } else if (va) {
+      } else if ($directionsArray.length > 0) {
         previewEvent = new NDKEvent($ndk);
         previewEvent.kind = 35000;
-        previewEvent.content = md;
+        previewEvent.content = $directionsArray.map((d, i) => `${i + 1}. ${d}`).join('\n');
         previewEvent.tags.push(['d', title.toLowerCase().replaceAll(' ', '-')]);
         previewEvent.tags.push(['title', title]);
-        previewEvent.tags.push(['t', 'nostrcooking']);
+        if (preptime !== '') {
+          previewEvent.tags.push(['prep_time', preptime]);
+        }
+        if (cooktime !== '') {
+          previewEvent.tags.push(['cook_time', cooktime]);
+        }
+        if (servings !== '') {
+          previewEvent.tags.push(['servings', servings]);
+        }
         if (summary !== '') {
           previewEvent.tags.push(['summary', summary]);
         }
@@ -178,12 +151,13 @@
             previewEvent.tags.push(['image', $images[i]]);
           }
         }
+        $ingredientsArray.forEach(([amount, ingredient]) => {
+          previewEvent?.tags.push(['ingredient', amount, ingredient]);
+        });
+
         $selectedTags.forEach((t) => {
           if (t.title) {
-            previewEvent?.tags.push([
-              't',
-              `nostrcooking-${t.title.toLowerCase().replaceAll(' ', '-')}`
-            ]);
+            previewEvent?.tags.push(['t', `${t.title.toLowerCase()}`]);
           }
         });
       }
@@ -191,31 +165,25 @@
   }
 
   async function publishRecipe() {
-    formatStringArrays();
     disablePublishButton = true;
     try {
-      const md = createMarkdown(
-        chefsnotes,
-        preptime,
-        cooktime,
-        servings,
-        ingredients,
-        directions,
-        additionalMarkdown
-      );
-      const va = validateMarkdownTemplate(md);
-      if (typeof va == 'string') {
-        resultMessage = `Error: ${va}`;
-      } else if ($images.length == 0) {
+      if ($images.length == 0) {
         resultMessage = `Error: No Image Uploaded`;
-      } else if (va) {
+      } else if ($directionsArray.length > 0) {
         const event = new NDKEvent($ndk);
         event.kind = 35000;
-        event.content = md;
+        event.content = $directionsArray.map((d, i) => `${i + 1}. ${d}`).join('\n');
         event.tags.push(['d', title.toLowerCase().replaceAll(' ', '-')]);
         event.tags.push(['title', title]);
-        event.tags.push(['t', 'nostrcooking']);
-        event.tags.push(['t', `nostrcooking-${title.toLowerCase().replaceAll(' ', '-')}`]);
+        if (preptime !== '') {
+          event.tags.push(['prep_time', preptime]);
+        }
+        if (cooktime !== '') {
+          event.tags.push(['cook_time', cooktime]);
+        }
+        if (servings !== '') {
+          event.tags.push(['servings', servings]);
+        }
         if (summary !== '') {
           event.tags.push(['summary', summary]);
         }
@@ -224,9 +192,12 @@
             event.tags.push(['image', $images[i]]);
           }
         }
+        $ingredientsArray.forEach(([amount, ingredient]) => {
+          event.tags.push(['ingredient', amount, ingredient]);
+        });
         $selectedTags.forEach((t) => {
           if (t.title) {
-            event.tags.push(['t', `nostrcooking-${t.title.toLowerCase().replaceAll(' ', '-')}`]);
+            event.tags.push(['t', `${t.title.toLowerCase()}`]);
           }
         });
         console.log('event to publish:', event);
@@ -282,19 +253,8 @@
   <div class="flex flex-col gap-2">
     <h3>Brief Summary</h3>
     <textarea
-      placeholder="Some brief description of the dish (can be the same as chef’s notes)"
+      placeholder="A brief description of the dish and chef’s notes"
       bind:value={summary}
-      rows="6"
-      class="input"
-    />
-  </div>
-
-  <div class="flex flex-col gap-2">
-    <h3>Chef's Notes</h3>
-    <span class="text-caption">Some notes about this recipe. (Markdown is supported)</span>
-    <textarea
-      placeholder="Eg. where the recipe is from, or any additional information"
-      bind:value={chefsnotes}
       rows="6"
       class="input"
     />
@@ -317,7 +277,12 @@
   </div>
   <div class="flex flex-col gap-2">
     <h3>Ingredients*</h3>
-    <StringComboBox placeholder={'2 eggs'} selected={ingredientsArray} showIndex={false} />
+    <TupleComboBox
+      selected={ingredientsArray}
+      showIndex={false}
+      amountPlaceholder="Quantity (e.g., 1 cup)"
+      ingredientPlaceholder="Item (e.g., flour)"
+    />
   </div>
   <div class="flex flex-col gap-2">
     <h3>Directions*</h3>

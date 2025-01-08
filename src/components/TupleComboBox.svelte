@@ -1,95 +1,105 @@
 <script lang="ts">
-	import type { Writable } from 'svelte/store';
+	import { writable, type Writable } from 'svelte/store';
 	import Button from './Button.svelte';
 	import TrashIcon from 'phosphor-svelte/lib/Trash';
 	import { slide } from 'svelte/transition';
   
-	let amount = '';
-	let ingredient = '';
-	export let selected: Writable<Array<[string, string]>>;
-	export let showIndex: boolean = false;
-	export let amountPlaceholder: string = 'Amount (e.g., 2 cups)';
-	export let ingredientPlaceholder: string = 'Ingredient (e.g., sugar)';
+	export let selected: Writable<[string, string][]>; // Array of tuples [amount, ingredient]
+	export let placeholderAmount: string;
+	export let placeholderIngredient: string;
   
-	function removeItem(index: number) {
-	  let nSelected = $selected;
-	  if (index < 0 || index >= nSelected.length) {
-		return; // Index out of bounds
-	  }
+	let editingIndex: number | null = null;
+	let inputAmount: string = '';
+	let inputIngredient: string = '';
   
-	  nSelected = [...nSelected.slice(0, index), ...nSelected.slice(index + 1)];
-	  selected.set(nSelected);
-	}
-  
-	function addItem() {
-	  let nSelected = $selected;
-	  if (amount && ingredient) {
-		nSelected.push([amount, ingredient]);
-		selected.set(nSelected);
-		amount = '';
-		ingredient = '';
+	function addTuple() {
+	  if (inputAmount.trim() && inputIngredient.trim()) {
+		selected.update(items => [...items, [inputAmount, inputIngredient]]);
+		inputAmount = '';
+		inputIngredient = '';
 	  }
 	}
   
-	function moveItemUp(index: number) {
-	  let nSelected = $selected;
-	  if (index > 0) {
-		const temp = nSelected[index];
-		nSelected[index] = nSelected[index - 1];
-		nSelected[index - 1] = temp;
-		selected.set(nSelected);
+	function removeTuple(index: number) {
+	  selected.update(items => items.filter((_, i) => i !== index));
+	}
+  
+	function startEditing(index: number) {
+	  const item = $selected[index];
+	  inputAmount = item[0];
+	  inputIngredient = item[1];
+	  editingIndex = index;
+	}
+  
+	function saveEditing() {
+	  if (editingIndex !== null) {
+		selected.update(items =>
+		  items.map((item, i) => (i === editingIndex ? [inputAmount, inputIngredient] : item))
+		);
+		editingIndex = null;
+		inputAmount = '';
+		inputIngredient = '';
 	  }
 	}
   
-	function moveItemDown(index: number) {
-	  let nSelected = $selected;
-	  if (index < nSelected.length - 1) {
-		const temp = nSelected[index];
-		nSelected[index] = nSelected[index + 1];
-		nSelected[index + 1] = temp;
-		selected.set(nSelected);
-	  }
+	function cancelEditing() {
+	  editingIndex = null;
+	  inputAmount = '';
+	  inputIngredient = '';
 	}
   </script>
   
-  <div class="mb-0">
-	{#if $selected.length > 0}
-	  <ul class="flex flex-col gap-2">
-		{#each $selected as [amount, ingredient], index}
-		  <li class="flex input" transition:slide|global={{ duration: 300 }}>
-			<span class="grow">{amount} {ingredient}</span>
-			<div class="flex gap-2">
-			  {#if showIndex && index > 0}
-				<button
-				  type="button"
-				  class="px-2 py-[0.05rem] rounded"
-				  on:click={() => moveItemUp(index)}
-				>
-				  ↑
-				</button>
-			  {/if}
-			  {#if showIndex && index < $selected.length - 1}
-				<button
-				  type="button"
-				  class="px-2 py-[0.05rem] rounded"
-				  on:click={() => moveItemDown(index)}
-				>
-				  ↓
-				</button>
-			  {/if}
-			  <button class="self-center text-danger" on:click={() => removeItem(index)}>
-				<TrashIcon />
-			  </button>
+  <div>
+	<ul class="flex flex-col gap-2">
+	  {#each $selected as [amount, ingredient], index}
+		<li
+		  class="flex items-center gap-4 input"
+		  transition:slide|global={{ duration: 300 }}
+		>
+		  {#if editingIndex === index}
+			<div class="flex gap-2 grow">
+			  <input
+				class="input"
+				bind:value={inputAmount}
+				placeholder={placeholderAmount}
+			  />
+			  <input
+				class="input"
+				bind:value={inputIngredient}
+				placeholder={placeholderIngredient}
+			  />
 			</div>
-		  </li>
-		{/each}
-	  </ul>
-	{/if}
-  </div>
+			<div class="flex gap-2">
+			  <Button on:click={saveEditing}>Save</Button>
+			  <Button on:click={cancelEditing}>Cancel</Button>
+			</div>
+		  {:else}
+			<div
+			  class="grow flex items-center justify-between"
+			  on:dblclick={() => startEditing(index)}
+			>
+			  <span>{amount} - {ingredient}</span>
+			</div>
+			<Button class="text-danger" on:click={() => removeTuple(index)}>
+			  <TrashIcon />
+			</Button>
+		  {/if}
+		</li>
+	  {/each}
+	</ul>
   
-  <form on:submit|preventDefault={addItem} class="flex gap-2">
-	<input bind:value={amount} class="input grow" placeholder={amountPlaceholder} />
-	<input bind:value={ingredient} class="input grow" placeholder={ingredientPlaceholder} />
-	<Button on:click={addItem} primary={false}>Add</Button>
-  </form>
+	<form on:submit|preventDefault={addTuple} class="flex gap-2 mt-4">
+	  <input
+		class="input"
+		bind:value={inputAmount}
+		placeholder={placeholderAmount}
+	  />
+	  <input
+		class="input"
+		bind:value={inputIngredient}
+		placeholder={placeholderIngredient}
+	  />
+	  <Button on:click={addTuple}>Add</Button>
+	</form>
+  </div>
   
