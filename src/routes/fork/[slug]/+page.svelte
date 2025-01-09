@@ -119,7 +119,6 @@
   let servings = '';
   let ingredientsArray: Writable<Array<[string, string]>> = writable([]);
   let directionsArray: Writable<string[]> = writable([]);
-  let directions = ``;
 
   let resultMessage = ' ';
   let disablePublishButton = false;
@@ -279,7 +278,7 @@
     <h3>Ingredients*</h3>
     <TupleComboBox
       selected={ingredientsArray}
-      showIndex={false}
+      showIndex={true}
       amountPlaceholder="Quantity (e.g., 1 cup)"
       ingredientPlaceholder="Item (e.g., flour)"
     />
