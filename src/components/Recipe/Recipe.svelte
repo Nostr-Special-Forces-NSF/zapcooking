@@ -270,6 +270,7 @@
 			<li>{tag[1]}</li>
 			{/each}
 		  </ul>
+		  <h2>Directions</h2>
           {@html parseMarkdown(event.content)}
         {/if}
       </div>

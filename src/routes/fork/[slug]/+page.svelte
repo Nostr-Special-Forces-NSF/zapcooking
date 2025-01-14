@@ -1,7 +1,6 @@
 <script lang="ts">
   import TagsComboBox from '../../../components/TagsComboBox.svelte';
   import { ndk, userPublickey } from '$lib/nostr';
-  import { createMarkdown, validateMarkdownTemplate } from '$lib/pharser';
   import { NDKEvent } from '@nostr-dev-kit/ndk';
   import { recipeTags, type recipeTagSimple } from '$lib/consts';
   import FeedItem from '../../../components/RecipeCard.svelte';
