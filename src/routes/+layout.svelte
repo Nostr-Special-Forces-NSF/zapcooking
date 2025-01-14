@@ -9,7 +9,7 @@
 
   async function loadUserData() {
     if ($ndk.signer && $userPublickey == '') {
-      const newUserPublicKey = (await $ndk.signer.user()).hexpubkey;
+      const newUserPublicKey = (await $ndk.signer.user()).pubkey;
       localStorage.setItem('nostrcooking_loggedInPublicKey', newUserPublicKey);
       $userPublickey = newUserPublicKey;
       userPublickey.set($userPublickey);

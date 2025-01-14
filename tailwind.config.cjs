@@ -10,7 +10,7 @@ const config = {
         sans: ['Geist', ...defaultTheme.fontFamily.sans]
       },
       colors: {
-        primary: '#EC4700',
+        primary: '#34375a',
         danger: '#FF3535',
         input: '#F6F6F6',
         'accent-gray': '#DDDDDD',

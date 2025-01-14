@@ -13,11 +13,12 @@
   import { onMount } from 'svelte';
   import StringComboBox from '../../components/StringComboBox.svelte';
   import TupleComboBox from '../../components/TupleComboBox.svelte';
+  import RecipeComboBox from '../../components/RecipeComboBox.svelte';
 
   let previewEvent: NDKEvent | undefined = undefined;
-
   let title = '';
   let images: Writable<string[]> = writable([]);
+  let image = '';
   let selectedTags: Writable<recipeTagSimple[]> = writable([]);
   let summary = '';
   let preptime = '';
@@ -25,6 +26,8 @@
   let servings = '';
   let ingredientsArray: Writable<Array<[string, string]>> = writable([]);
   let directionsArray: Writable<string[]> = writable([]);
+
+  const selectedRecipe = writable<string | null>(null);
 
   let resultMessage = ' ';
   let disablePublishButton = false;
@@ -173,11 +176,11 @@
   <div class="flex flex-col gap-4">
     <h3>Details</h3>
     <div class="flex flex-col gap-2">
-      <span class="font-bold">Prep Time</span>
+      <span class="font-bold">Prep Time (minutes)</span>
       <input placeholder="20 min" bind:value={preptime} class="input" />
     </div>
     <div class="flex flex-col gap-2">
-      <span class="font-bold">Cooking Time</span>
+      <span class="font-bold">Cooking Time (minutes)</span>
       <input placeholder="1 hour and 5 min" bind:value={cooktime} class="input" />
     </div>
     <div class="flex flex-col gap-2">
@@ -196,12 +199,14 @@
   </div>
   <div class="flex flex-col gap-2">
     <h3>Directions*</h3>
+    <RecipeComboBox placeholder={'Bake for 30 min'} selectedRecipe = {selectedRecipe} />
     <StringComboBox placeholder={'Bake for 30 min'} selected={directionsArray} showIndex={false} />
   </div>
-  <div>
+  <div class="flex flex-col gap-2">
     <h3>Cover Image*</h3>
     <span class="text-caption">Appears on the recipe card</span>
     <ImagesComboBox uploadedImages={images} />
+    <input placeholder="Input a url to an image" bind:value={image} class="input" />
   </div>
   <div class="flex justify-end">
     <div>
