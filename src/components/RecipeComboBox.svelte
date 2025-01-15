@@ -6,9 +6,9 @@
   import { NDKEvent } from '@nostr-dev-kit/ndk';
 
   export let selectedRecipe: Writable<string | null>; // Store for selected recipe ID
-  export let placeholderString: string;
+  export let placeholder: string;
 
-  let recipes = writable<Set<NDKEvent>>(); // Store for fetched recipe events
+  let recipes = writable<Set<NDKEvent>>(new Set); // Store for fetched recipe events
   let loading = writable(true); // Loading indicator
 
   // Fetch recipes for the given npub
@@ -43,13 +43,12 @@
   }
 </script>
 
-<div>
-  <label for="recipe-select">Select a Recipe:</label>
-  <select id="recipe-select" on:change={handleSelection} disabled={$loading} placeholder={placeholderString}>
+<div class="mb-0 flex flex-col gap-2">
+  <select id="recipe-select" on:change={handleSelection} disabled={$loading}>
     {#if $loading}
       <option value="" disabled>Loading recipes...</option>
     {:else if $recipes.size > 0}
-      <option value="" disabled selected>Select a recipe</option>
+      <option value="" disabled selected>{placeholder}</option>
       {#each $recipes as recipe (recipe.id)}
         <option value={recipe.id}
           >{recipe.tags.find((tag) => tag[0] === 'title')?.[1] || 'Untitled Recipe'}</option

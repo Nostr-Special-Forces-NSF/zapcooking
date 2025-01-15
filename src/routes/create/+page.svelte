@@ -199,7 +199,7 @@
   </div>
   <div class="flex flex-col gap-2">
     <h3>Directions*</h3>
-    <RecipeComboBox placeholder={'Bake for 30 min'} selectedRecipe = {selectedRecipe} />
+    <RecipeComboBox placeholder={'Select an existing recipe'} selectedRecipe = {selectedRecipe} />
     <StringComboBox placeholder={'Bake for 30 min'} selected={directionsArray} showIndex={false} />
   </div>
   <div class="flex flex-col gap-2">

@@ -31,8 +31,10 @@
   let zapModal = false;
   let bookmarkModal = false;
   let dropdownActive = false;
+  let recipeContent = '';
 
   let listsArr: NDKEvent[] = [];
+
   async function getLists(): Promise<NDKEvent[]> {
     const evts = await $ndk.fetchEvents([
       {
@@ -116,6 +118,12 @@
   /*const firstTag = recipeTags.find(
     (e) => e.title.toLowerCase().replaceAll(' ', '-') == event.getMatchingTags("t").filter((t) => t[1].slice(13)[0])[0][1].slice(13)
   );*/
+
+  $: if (event.content) {
+    (async () => {
+      recipeContent = await parseMarkdown(event.content);
+    })();
+  }
 </script>
 
 <ZapModal bind:open={zapModal} {event} />
@@ -224,13 +232,13 @@
       </div>
       <div class="prose">
         {#if $translateOption.lang}
-          {#await translate($translateOption, parseMarkdown(event.content))}
+          {#await translate($translateOption, recipeContent)}
             ...
           {:then result}
             <!-- TODO: clean this up -->
             {#if result !== ''}
               {#if result.from.language.iso === $translateOption.lang}
-                {@html parseMarkdown(event.content)}
+                {@html recipeContent}
               {:else}
                 <hr />
                 <p class="font-medium">
@@ -258,20 +266,20 @@
             <h2>Chef's notes</h2>
             <p>{event.tagValue('summary')}</p>
           {/if}
-		  <h2>Details</h2>
-		  <ul>
-			<li>⏲️ Prep time: {event.tagValue('prep_time')} minutes</li>
-			<li>🍳 Cook time: {event.tagValue('cook_time')} minutes</li>
-			<li>🍽️ Servings: {event.tagValue('servings')}</li>
-		  </ul>
-		  <h2>Ingredients</h2>
-		  <ul>
-			{#each event.tags.filter(t => t[0] === 'ingredient') as tag}
-			<li>{tag[1]}</li>
-			{/each}
-		  </ul>
-		  <h2>Directions</h2>
-          {@html parseMarkdown(event.content)}
+          <h2>Details</h2>
+          <ul>
+            <li>⏲️ Prep time: {event.tagValue('prep_time')} minutes</li>
+            <li>🍳 Cook time: {event.tagValue('cook_time')} minutes</li>
+            <li>🍽️ Servings: {event.tagValue('servings')}</li>
+          </ul>
+          <h2>Ingredients</h2>
+          <ul>
+            {#each event.tags.filter((t) => t[0] === 'ingredient') as tag}
+              <li>{tag[2]} {tag[1]}</li>
+            {/each}
+          </ul>
+          <h2>Directions</h2>
+          {@html recipeContent}
         {/if}
       </div>
       <div class="flex flex-col items-center gap-4 bg-input py-6 rounded-3xl">

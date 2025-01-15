@@ -52,7 +52,7 @@
 
 <div class="mb-0">
   {#if $selected.length > 0}
-    <ul class="flex flex-col gap-2">
+    <ul class="">
       {#each $selected as tag, index}
         <li class="flex input" transition:slide|global={{ duration: 300 }}>
           <span class="grow">{tag}</span>

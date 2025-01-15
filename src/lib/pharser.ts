@@ -1,183 +1,165 @@
-import MarkdownIt from 'markdown-it';
+import { marked, type Token, type Tokens, type TokenizerAndRendererExtension } from 'marked';
+import DOMPurify from 'dompurify';
+import { ndk, userPublickey } from './nostr';
+import { NDKSubscriptionCacheUsage } from '@nostr-dev-kit/ndk';
+import { nip19 } from 'nostr-tools';
 
-const md = new MarkdownIt();
+const getPub = async (token: Token) => {
+  if (token.type === 'nostr') {
+    const id = `${token.tagType}${token.content}`;
+    const { type, data } = nip19.decode(id);
+    let npub = '';
 
-export function parseMarkdown(markdown: string) {
-  const parsedMarkdown = md.render(markdown);
+    switch (type) {
+      case 'nprofile':
+        npub = data.pubkey;
+        break;
+      case 'npub':
+        npub = data;
+        break;
+      default:
+        return;
+    }
 
-  return parsedMarkdown;
-}
+    let user = $ndk.getUser({ hexpubkey: npub });
 
-interface MarkdownInformation {
-  prepTime: string;
-  cookTime: string;
-  servings: string;
-}
-
-interface MarkdownTemplate {
-  chefNotes?: string;
-  information?: MarkdownInformation;
-  ingredients: string[];
-  directions: string[];
-  additionalMarkdown?: string;
-}
-
-export function validateMarkdownTemplate(markdown: string): MarkdownTemplate | string {
-  const template: MarkdownTemplate = {
-    ingredients: [],
-    directions: []
-  };
-
-  template.information = {
-    prepTime: '',
-    cookTime: '',
-    servings: ''
-  };
-
-  const sections = markdown.match(/## [A-Za-z\s']+\n[^#]+/g);
-
-  if (!sections) {
-    return 'Sections are missing.';
-  }
-
-  for (const section of sections) {
-    if (section.startsWith("## Chef's notes")) {
-      const chefNotes = section.split("## Chef's notes")[1].trim();
-      if (chefNotes.length > 99999) {
-        return "Chef's notes exceed character limit.";
+    try {
+      const profile = await user.fetchProfile({
+        cacheUsage: NDKSubscriptionCacheUsage.CACHE_FIRST,
+        closeOnEose: true,
+        groupable: true,
+        groupableDelay: 1000
+      });
+      if (profile) {
+        token.userName = profile.name || profile.displayName;
       }
-      template.chefNotes = chefNotes;
-    } else if (section.startsWith('## Details')) {
-      const detailsLines = section.split('\n').slice(1, -1);
-      for (const line of detailsLines) {
-        const [key, value] = line.split(': ');
-        if (key === '- ⏲️ Prep time') {
-          if (value.length > 999) {
-            return 'Prep time exceeds character limit.';
-          }
-          template.information.prepTime = value;
-        } else if (key === '- 🍳 Cook time') {
-          if (value.length > 999) {
-            return 'Cook time exceeds character limit.';
-          }
-          template.information.cookTime = value;
-        } else if (key === '- 🍽️ Servings') {
-          if (value.length > 999) {
-            return 'Servings exceed character limit.';
-          }
-          template.information.servings = value;
+    } catch (e) {
+      console.error(e);
+    }
+  } else if (token.type === 'email') {
+    try {
+      const user = await $ndk.getUserFromNip05(token.text);
+      if (user) {
+        token.isNip05 = true;
+        token.tagType = 'npub';
+        token.content = user.npub;
+
+        // Fetch user profile
+        const profile = await user.fetchProfile({
+          cacheUsage: NDKSubscriptionCacheUsage.CACHE_FIRST,
+          closeOnEose: true,
+          groupable: true,
+          groupableDelay: 1000
+        });
+
+        if (profile) {
+          token.userName = profile.name || profile.displayName || token.text;
+        } else {
+          token.userName = token.text;
         }
       }
-    } else if (section.startsWith('## Ingredients')) {
-      const ingredientsLines = section.split('\n').slice(1, -1);
-      for (const line of ingredientsLines) {
-        if (line.startsWith('- ')) {
-          const ingredient = line.substring(2).trim();
-          if (ingredient.length > 9999) {
-            return 'An ingredient exceeds the character limit.';
-          }
-          template.ingredients.push(ingredient);
-        }
-      }
-    } else if (section.startsWith('## Directions')) {
-      const directionsLines = section.split('\n').slice(1);
-      let prevStepNumber = 0;
-      for (const line of directionsLines) {
-        if (line.match(/^\d+\./)) {
-          // @ts-expect-error i'm not going to mess with this, it's probably fine though.
-          const stepNumber = parseInt(line.match(/^\d+/)[0], 10);
-          if (stepNumber !== prevStepNumber + 1) {
-            return 'Directions are not in the correct ordered list format.';
-          }
-          const stepDescription = line.split(/^\d+\./)[1].trim();
-          if (stepDescription.length > 9999) {
-            return 'A step in the directions exceeds the character limit.';
-          }
-          template.directions.push(stepDescription);
-          prevStepNumber = stepNumber;
-        } else if (line.trim() !== '') {
-          return 'Directions are not in the correct ordered list format.';
-        }
-      }
-    } else if (section.startsWith('## Additional Resources')) {
-      const additionalMarkdown = section.split('## Additional Resources')[1].trim();
-      template.additionalMarkdown = additionalMarkdown;
+    } catch (e) {
+      console.error(`Failed to fetch NIP-05 user for ${token.text}:`, e);
+      token.isNip05 = false;
     }
   }
+};
 
-  if (template.directions.length < 1 || template.ingredients.length < 1) {
-    return 'Directions and/or ingredients list too short.';
+const nostrRegex = /^(nostr:)?n(event|ote|pub|profile|addr)([a-zA-Z0-9]{10,1000})/;
+
+const nostrTokenizer: TokenizerAndRendererExtension = {
+  name: 'nostr',
+  level: 'inline',
+  start(src: string) {
+    const match = src.match(/(nostr:)?n(event|ote|pub|profile|addr)/);
+    return match ? match.index : -1;
+  },
+  tokenizer(src: string) {
+    const match = nostrRegex.exec(src);
+    if (match) {
+      const [fullMatch, prefix, tagType, content] = match;
+      return {
+        type: 'nostr',
+        raw: fullMatch,
+        text: fullMatch,
+        tagType: `n${tagType}`,
+        prefix: prefix || '',
+        content,
+        userName: null,
+        tokens: []
+      };
+    }
+  },
+  renderer(token: Tokens.Generic) {
+    const { tagType, content, userName } = token;
+    let url = `/${tagType}${content}`;
+    let linkText = userName ? `@${userName}` : `${tagType}${content}`.slice(0, 20) + '...';
+
+    switch (tagType) {
+      case 'nevent':
+      case 'note':
+        url = `https://coracle.social/notes/${tagType}${content}`;
+        break;
+      case 'nprofile':
+        url = `https://coracle.social/people/${tagType}${content}`;
+        break;
+      case 'npub':
+      case 'naddr':
+		url=`/recipe/${tagType}${content}`
+        break;
+    }
+    return `<a href="${url}">${linkText}</a>`;
   }
+};
 
-  return template;
+const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+/;
+
+const emailTokenizer: TokenizerAndRendererExtension = {
+  name: 'email',
+  level: 'inline',
+  start(src: string) {
+    const match = src.match(emailRegex);
+    return match ? match.index : -1;
+  },
+  tokenizer(src: string) {
+    const match = emailRegex.exec(src);
+    if (match) {
+      const [fullMatch] = match;
+      return {
+        type: 'email',
+        raw: fullMatch,
+        text: fullMatch,
+        href: `mailto:${fullMatch}`,
+        isNip05: false,
+        tokens: []
+      };
+    }
+  },
+  renderer(token: Tokens.Generic) {
+    if (token.isNip05) {
+      // Render as Nostr link
+      const { tagType, content, userName } = token;
+      let url = `/${content}`;
+      let linkText = userName ? `@${userName}` : token.text;
+      return `<a href="${url}">${linkText}</a>`;
+    } else {
+      return `<a href="${token.href}">${token.text}</a>`;
+    }
+  }
+};
+
+marked.use({
+  extensions: [nostrTokenizer, emailTokenizer],
+  async: true,
+  walkTokens: getPub,
+});
+
+export async function parseMarkdown(content: string): Promise<string> {
+    const parsed = await marked(content);
+    const sanitizedContent = DOMPurify.sanitize(parsed);
+	return sanitizedContent;
 }
 
-export function createMarkdown(
-  chefsnotes: string,
-  preptime: string,
-  cooktime: string,
-  servings: string,
-  ingredients: string,
-  directions: string,
-  additionalMarkdown: string
-) {
-  let template: string = ``;
-
-  if (chefsnotes !== '') {
-    template += `
-## Chef's notes
-
-${chefsnotes}
-`;
-  }
-
-  if (preptime !== '' || cooktime !== '' || servings !== '') {
-    template += `
-## Details
-
-`;
-    if (preptime !== '') {
-      template += `- ⏲️ Prep time: ${preptime}
-`;
-    }
-
-    if (cooktime !== '') {
-      template += `- 🍳 Cook time: ${cooktime}
-`;
-    }
-
-    if (servings !== '') {
-      template += `- 🍽️ Servings: ${servings}
-`;
-    }
-  }
-
-  if (ingredients.length > 1) {
-    template += `
-## Ingredients
-
-`;
-    template += ingredients;
-  }
-
-  if (directions.length > 1) {
-    template += `
-
-## Directions
-
-`;
-    template += directions;
-  }
-
-  if (additionalMarkdown !== '') {
-    template += `
-
-## Additional Resources
-
-${additionalMarkdown}
-
-`;
-  }
-
-  return template;
+export function validateMarkdownTemplate(content: string): boolean {
+	return true;
 }
