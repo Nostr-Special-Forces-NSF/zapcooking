@@ -119,6 +119,14 @@
     (e) => e.title.toLowerCase().replaceAll(' ', '-') == event.getMatchingTags("t").filter((t) => t[1].slice(13)[0])[0][1].slice(13)
   );*/
 
+  async function getEmbedded(event: NDKEvent) {
+	event.tags.map((t) => {
+		if (t[0] === 'a') {
+			
+		}
+	})
+  }
+
   $: if (event.content) {
     (async () => {
       recipeContent = await parseMarkdown(event.content);
