@@ -7,11 +7,23 @@
   import Recipe from '../../../components/Recipe/Recipe.svelte';
 
   let event: NDKEvent | null = null;
+  let embeddedRecipes: NDKEvent[] = [];
   let naddr: string = '';
 
   $: {
     if ($page.params.slug) {
       loadData();
+    }
+    if (event) {
+      let addrs = event.tags.map((t) => {
+        if (t[0] === 'a') {
+          const atags = t[1].split(':');
+          if (atags[0] === '35000') {
+            return atags[1] as string;
+          }
+        }
+      });
+	  loadEmbedded(addrs);
     }
   }
 
@@ -58,6 +70,16 @@
     }
   }
 
+  async function loadEmbedded(addrs: (string | undefined)[]) {
+    addrs.forEach(async (a) => {
+
+      const eEvent = await $ndk.fetchEvent(a);
+      if (eEvent) {
+		embeddedRecipes.push(eEvent);
+	  }
+    });
+  }
+
   $: og_meta = {
     title: event
       ? event.tags.find((tag) => tag[0] === 'title')?.[1] || event.content.slice(0, 60) + '...'
@@ -94,8 +116,8 @@
 </svelte:head>
 
 {#if event}
-  <Recipe {event} />
-  {:else}
+  <Recipe {event} {embeddedRecipes} />
+{:else}
   <div class="flex justify-center items-center h-screen">
     <img class="w-64" src="/pan-animated.svg" alt="Loading" />
   </div>

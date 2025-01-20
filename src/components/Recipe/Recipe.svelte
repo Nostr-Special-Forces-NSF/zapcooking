@@ -20,9 +20,11 @@
   import { clickOutside } from '$lib/clickOutside';
   import AuthorProfile from '../AuthorProfile.svelte';
   import { fade } from 'svelte/transition';
-  import { recipeTags, type recipeTagSimple } from '$lib/consts';
+  import Feed from '../Feed.svelte';
 
   export let event: NDKEvent;
+  export let embeddedRecipes: NDKEvent[];
+
   const naddr = nip19.naddrEncode({
     identifier: event.replaceableDTag(),
     pubkey: event.pubkey,
@@ -258,22 +260,44 @@
             <h2>Chef's notes</h2>
             <p>{event.tagValue('summary')}</p>
           {/if}
-		  <h2>Details</h2>
-		  <ul>
-			<li>⏲️ Prep time: {event.tagValue('prep_time')} minutes</li>
-			<li>🍳 Cook time: {event.tagValue('cook_time')} minutes</li>
-			<li>🍽️ Servings: {event.tagValue('servings')}</li>
-		  </ul>
-		  <h2>Ingredients</h2>
-		  <ul>
-			{#each event.tags.filter(t => t[0] === 'ingredient') as tag}
-			<li>{tag[1]}</li>
-			{/each}
-		  </ul>
-		  <h2>Directions</h2>
+          <h2>Details</h2>
+          <ul>
+            <li>⏲️ Prep time: {event.tagValue('prep_time')} minutes</li>
+            <li>🍳 Cook time: {event.tagValue('cook_time')} minutes</li>
+            <li>🍽️ Servings: {event.tagValue('servings')}</li>
+          </ul>
+          <h2>Ingredients</h2>
+          {#if embeddedRecipes.length > 0}
+            {#each embeddedRecipes as embeddedRecipe}
+              <h3>{embeddedRecipe.tagValue('title')}</h3>
+              <ul>
+                {#each embeddedRecipe.tags.filter((t) => t[0] === 'ingredient') as tag}
+                  <li>{tag[2] ?? ''} {tag[1]}</li>
+                {/each}
+              </ul>
+            {/each}
+          {/if}
+          <ul>
+            {#each event.tags.filter((t) => t[0] === 'ingredient') as tag}
+              <li>{tag[2] ?? ''} {tag[1]}</li>
+            {/each}
+          </ul>
+          <h2>Directions</h2>
+          {#if embeddedRecipes.length > 0}
+            {#each embeddedRecipes as embeddedRecipe}
+              <h3>{embeddedRecipe.tagValue('title')}</h3>
+              {@html parseMarkdown(embeddedRecipe.content)}
+            {/each}
+          {/if}
           {@html parseMarkdown(event.content)}
         {/if}
       </div>
+      {#if embeddedRecipes.length > 0}
+        <div>
+          <h2>References the following recipes</h2>
+          <Feed events={embeddedRecipes} hideHide={true} />
+        </div>
+      {/if}
       <div class="flex flex-col items-center gap-4 bg-input py-6 rounded-3xl">
         <h2>Enjoy this recipe?</h2>
         <Button on:click={() => (zapModal = true)}>Zap it</Button>
