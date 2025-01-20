@@ -6,7 +6,7 @@
   import { NDKEvent } from '@nostr-dev-kit/ndk';
   import TrashIcon from 'phosphor-svelte/lib/Trash';
 
-  export let selectedRecipesArray: Writable<Set<string>> = writable(new Set());
+  export let selectedRecipesArray: Writable<Map<string, string>> = writable();
   export let placeholder: string;
 
   let recipes = writable<Set<NDKEvent>>(new Set()); // Store for fetched recipe events
@@ -41,8 +41,10 @@
   });
 
   function handleSelection(event: Event) {
-    const selectedId = (event.target as HTMLSelectElement).value;
-    selectedRecipesArray.update((store) => store.add(selectedId));
+	const select = (event.target as HTMLSelectElement)
+    const selectedId = select.value;
+	const selectedText = select.options[select.selectedIndex].text;
+    selectedRecipesArray.update((store) => store.set(selectedId, selectedText));
   }
 
   function removeItem(index: string) {
@@ -70,10 +72,10 @@
   <ul class="flex flex-col gap-2">
 	{#each $selectedRecipesArray as item}
 	  <li class="flex input">
-		  <span class="grow">{item}</span
+		  <span class="grow">{item[1]}</span
 		  >
 		  <div class="flex gap-2">
-			<button class="self-center text-danger" on:click={() => removeItem(item)}>
+			<button class="self-center text-danger" on:click={() => removeItem(item[0])}>
 			  <TrashIcon />
 			</button>
 		  </div>

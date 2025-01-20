@@ -20,7 +20,7 @@
   let title = '';
   let images: Writable<string[]> = writable([]);
   let selectedTags: Writable<recipeTagSimple[]> = writable([]);
-  let selectedRecipesArray: Writable<Set<string>> = writable(new Set());
+  let selectedRecipesArray: Writable<Map<string, string>> = writable(new Map());
   let summary = '';
   let preptime = '';
   let cooktime = '';
