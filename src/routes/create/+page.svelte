@@ -13,12 +13,14 @@
   import { onMount } from 'svelte';
   import StringComboBox from '../../components/StringComboBox.svelte';
   import TupleComboBox from '../../components/TupleComboBox.svelte';
+  import RecipeComboBox from '../../components/RecipeComboBox.svelte';
 
   let previewEvent: NDKEvent | undefined = undefined;
 
   let title = '';
   let images: Writable<string[]> = writable([]);
   let selectedTags: Writable<recipeTagSimple[]> = writable([]);
+  let selectedRecipesArray: Writable<Set<string>> = writable(new Set());
   let summary = '';
   let preptime = '';
   let cooktime = '';
@@ -168,6 +170,11 @@
       rows="6"
       class="input"
     />
+  </div>
+
+  <div class="flex flex-col gap-4">
+    <h3>Related Recipes</h3>
+    <RecipeComboBox placeholder="Add one or more related recipes" {selectedRecipesArray} />
   </div>
 
   <div class="flex flex-col gap-4">

@@ -57,8 +57,7 @@
       let filter: NDKFilter = {
         authors: [hexpubkey],
         limit: 256,
-        kinds: [35000],
-        '#t': ['nostrcooking']
+        kinds: [35000]
       };
       const evts = await $ndk.fetchEvents(filter);
       let evtsArr = Array.from(evts);
