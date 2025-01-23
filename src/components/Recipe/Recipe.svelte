@@ -21,9 +21,13 @@
   import AuthorProfile from '../AuthorProfile.svelte';
   import { fade } from 'svelte/transition';
   import Feed from '../Feed.svelte';
+  import { CopySimple } from 'phosphor-svelte';
 
   export let event: NDKEvent;
   export let embeddedRecipes: NDKEvent[];
+
+  export let prepTime: number = 0;
+  export let cookTime: number = 0;
 
   const naddr = nip19.naddrEncode({
     identifier: event.replaceableDTag(),
@@ -70,7 +74,7 @@
       nevent.kind = 30003;
       if (toggleListArr[i] !== 'nostrcooking-bookmarks') nevent.tags.push(['t', 'nostrcooking']);
       nevent.tags.push(['d', toggleListArr[i]]);
-      nevent.tags.push(['', currentList.getMatchingTags('name')[0][1]]);
+      nevent.tags.push(['name', currentList.getMatchingTags('name')[0][1]]);
       const summary = currentList.getMatchingTags('summary');
       if (summary.length > 0) {
         nevent.tags.push(['summary', summary[0][1]]);
@@ -215,6 +219,11 @@
                   <PencilIcon size={24} />
                   Edit
                 </a>
+              {:else}
+                <a class="flex gap-2 cursor-pointer" href="/fork/{naddr}">
+                  <CopySimple size={24} />
+                  Copy
+                </a>
               {/if}
               <button class="flex gap-2 cursor-pointer" on:click={() => (bookmarkModal = true)}>
                 <BookmarkIcon size={24} />
@@ -262,8 +271,8 @@
           {/if}
           <h2>Details</h2>
           <ul>
-            <li>⏲️ Prep time: {event.tagValue('prep_time')} minutes</li>
-            <li>🍳 Cook time: {event.tagValue('cook_time')} minutes</li>
+            <li>⏲️ Prep time: {prepTime} minutes</li>
+            <li>🍳 Cook time: {cookTime} minutes</li>
             <li>🍽️ Servings: {event.tagValue('servings')}</li>
           </ul>
           <h2>Ingredients</h2>

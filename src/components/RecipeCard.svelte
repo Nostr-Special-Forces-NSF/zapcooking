@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { userPublickey } from '$lib/nostr';
   import type { NDKEvent } from '@nostr-dev-kit/ndk';
   import { nip19 } from 'nostr-tools';
   import { onMount } from 'svelte';
@@ -14,7 +15,7 @@
         const naddr = nip19.naddrEncode({
           identifier: d,
           kind: event.kind,
-          pubkey: event.author.pubkey
+          pubkey: event.author.pubkey ?? userPublickey
         });
         link = `/${list ? 'list' : 'recipe'}/${naddr}`;
       }

@@ -160,7 +160,7 @@
           }
         }
         $ingredientsArray.forEach(([amount, ingredient]) => {
-          previewEvent?.tags.push(['ingredient', amount, ingredient]);
+          previewEvent?.tags.push(['ingredient', ingredient, amount]);
         });
 
         $selectedTags.forEach((t) => {
@@ -194,6 +194,7 @@
         }
         if (summary !== '') {
           event.tags.push(['summary', summary]);
+          event.tags.push(['alt', summary]);
         }
         if ($images.length > 0) {
           for (let i = 0; i < $images.length; i++) {
@@ -201,7 +202,7 @@
           }
         }
         $ingredientsArray.forEach(([amount, ingredient]) => {
-          event.tags.push(['ingredient', amount, ingredient]);
+          event.tags.push(['ingredient', ingredient, amount]);
         });
         $selectedTags.forEach((t) => {
           if (t.title) {
@@ -221,7 +222,7 @@
         });
         const naddr = nip19.naddrEncode({
           identifier: title.toLowerCase().replaceAll(' ', '-'),
-          pubkey: event.author.hexpubkey,
+          pubkey: event.author.pubkey,
           kind: 35000
         });
         setTimeout(() => {

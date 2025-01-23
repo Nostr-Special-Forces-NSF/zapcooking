@@ -56,6 +56,7 @@
         }
         if (summary !== '') {
           previewEvent.tags.push(['summary', summary]);
+          previewEvent.tags.push(['alt', summary]);
         }
         if ($images.length > 0) {
           for (let i = 0; i < $images.length; i++) {
@@ -63,7 +64,7 @@
           }
         }
         $ingredientsArray.forEach(([amount, ingredient]) => {
-          previewEvent?.tags.push(['ingredient', amount, ingredient]);
+          previewEvent?.tags.push(['ingredient', ingredient, amount]);
         });
 
         $selectedTags.forEach((t) => {
@@ -104,7 +105,7 @@
           }
         }
         $ingredientsArray.forEach(([amount, ingredient]) => {
-          event.tags.push(['ingredient', amount, ingredient]);
+          event.tags.push(['ingredient', ingredient, amount]);
         });
         $selectedTags.forEach((t) => {
           if (t.title) {

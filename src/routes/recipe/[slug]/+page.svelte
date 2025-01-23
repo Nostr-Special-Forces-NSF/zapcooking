@@ -9,6 +9,9 @@
   let event: NDKEvent | null = null;
   let embeddedRecipes: NDKEvent[] = [];
   let naddr: string = '';
+  let prepTime: number = 0;
+  let cookTime: number = 0;
+  let parsedTime: boolean = false;
 
   $: {
     if ($page.params.slug) {
@@ -23,7 +26,7 @@
           }
         }
       });
-	  loadEmbedded(addrs);
+      loadEmbedded(addrs);
     }
   }
 
@@ -71,12 +74,31 @@
   }
 
   async function loadEmbedded(addrs: (string | undefined)[]) {
-    addrs.forEach(async (a) => {
+    try {
+      const results = await Promise.all(
+        addrs.map((a) => (a ? $ndk.fetchEvent(a) : Promise.resolve(undefined)))
+      );
 
-      const eEvent = await $ndk.fetchEvent(a);
-      if (eEvent) {
-		embeddedRecipes.push(eEvent);
+      results.forEach((eEvent) => {
+        if (eEvent) {
+          embeddedRecipes.push(eEvent);
+        }
+      });
+	  if (!parsedTime){
+		getTimes();
+		parsedTime = true;
 	  }
+    } catch (error) {
+      console.error('Error loading embedded recipes:', error);
+    }
+  }
+
+  function getTimes() {
+    prepTime = parseInt(event!.tagValue('prep_time')!);
+    cookTime = parseInt(event!.tagValue('cook_time')!);
+    embeddedRecipes.forEach((e) => {
+      prepTime += parseInt(e.tagValue('prep_time')!);
+      cookTime += parseInt(e.tagValue('cook_time')!);
     });
   }
 
@@ -116,7 +138,7 @@
 </svelte:head>
 
 {#if event}
-  <Recipe {event} {embeddedRecipes} />
+  <Recipe {event} {embeddedRecipes} {prepTime} {cookTime} />
 {:else}
   <div class="flex justify-center items-center h-screen">
     <img class="w-64" src="/pan-animated.svg" alt="Loading" />
