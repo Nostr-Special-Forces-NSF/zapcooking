@@ -26,7 +26,7 @@
       naddr = nip19.naddrEncode({
         identifier: 'nostrcooking-bookmarks',
         pubkey: $userPublickey,
-        kind: 30001
+        kind: 30003
       });
     }
 
@@ -42,16 +42,16 @@
       '#d': ['nostrcooking-bookmarks'],
       // @ts-ignore
       authors: [$userPublickey],
-      kinds: [30001]
+      kinds: [30003]
     });
     if (e) {
       event = e;
     } else {
       try {
         const event = new NDKEvent($ndk);
-        event.kind = 30001;
+        event.kind = 30003;
         event.tags.push(['d', 'nostrcooking-bookmarks']);
-        event.tags.push(['title', 'Nostr Cooking Bookmarks']);
+        event.tags.push(['name', 'Nostr Cooking Bookmarks']);
         let relays = await event.publish();
         relays.forEach((relay) => {
           relay.once('published', () => {

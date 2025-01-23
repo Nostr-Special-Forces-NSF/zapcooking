@@ -38,13 +38,13 @@
       '#d': ['nostrcooking-bookmarks'],
       // @ts-ignore
       authors: [$userPublickey],
-      kinds: [30001]
+      kinds: [30003]
     });
     if (e) {
       event = e;
     }
     if (event) {
-      let ntitle = event.tags.find((t) => t[0] == 'title')?.[1];
+      let ntitle = event.tags.find((t) => t[0] == 'name')?.[1];
       if (ntitle) {
         title = ntitle;
       }
@@ -82,7 +82,7 @@
           });
           if (newEv) {
             events.push(newEv);
-            $items.push({ title: newEv.tags.find((z) => z[0] == 'title')?.[1], naddr: naddr });
+            $items.push({ title: newEv.tags.find((z) => z[0] == 'name')?.[1], naddr: naddr });
             $items = $items;
             items.set($items);
           }
@@ -102,9 +102,9 @@
     disablePublishButton = true;
     try {
       const nevent = new NDKEvent($ndk);
-      nevent.kind = 30001;
+      nevent.kind = 30003;
       nevent.tags.push(['d', 'nostrcooking-bookmarks']);
-      nevent.tags.push(['title', 'Zap Cooking Bookmarks']);
+      nevent.tags.push(['name', 'Zap Cooking Bookmarks']);
       if (summary !== '') {
         nevent.tags.push(['summary', summary]);
       }
@@ -130,7 +130,7 @@
       resultMessage = 'Succes!';
       let naddr = nip19.naddrEncode({
         identifier: title.toLowerCase().replaceAll(' ', '-'),
-        kind: 30001,
+        kind: 30003,
         pubkey: nevent.pubkey
       });
       setTimeout(() => {
@@ -162,7 +162,7 @@
         if (newEv) {
           const updatedItems = i.map((item) => {
             if (item === t) {
-              return { ...item, title: newEv.tags.find((z) => z[0] === 'title')?.[1] };
+              return { ...item, title: newEv.tags.find((z) => z[0] === 'name')?.[1] };
             }
             return item;
           });

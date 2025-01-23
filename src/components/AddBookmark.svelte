@@ -17,7 +17,7 @@
     let e = await $ndk.fetchEvent({
       '#d': ['nostrcooking-bookmarks'],
       authors: [$userPublickey],
-      kinds: [30001]
+      kinds: [30003]
     });
     if (e) {
       bookmarkEvent = e;
@@ -43,7 +43,7 @@
     let e = await $ndk.fetchEvent({
       '#d': ['nostrcooking-bookmarks'],
       authors: [$userPublickey],
-      kinds: [30001]
+      kinds: [30003]
     });
     if (e) {
       bookmarkEvent = e;
@@ -63,7 +63,7 @@
     if (event && bookmarkEvent && event.author.pubkey && bookmarkEvent.sig) {
       removeBookmarkShow = false;
       const nevent = new NDKEvent($ndk);
-      nevent.kind = 30001;
+      nevent.kind = 30003;
       bookmarkEvent.tags.forEach((t) => {
         if (
           t[0] == 'a' &&
@@ -91,7 +91,7 @@
     let e = await $ndk.fetchEvent({
       '#d': ['nostrcooking-bookmarks'],
       authors: [$userPublickey],
-      kinds: [30001]
+      kinds: [30003]
     });
     if (e) {
       bookmarkEvent = e;
@@ -111,7 +111,7 @@
     if (event && bookmarkEvent && event.author.pubkey && bookmarkEvent.sig) {
       show = false;
       const nevent = new NDKEvent($ndk);
-      nevent.kind = 30001;
+      nevent.kind = 30003;
       nevent.tags = bookmarkEvent.tags;
       nevent.tags.push([
         'a',

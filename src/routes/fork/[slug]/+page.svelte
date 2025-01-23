@@ -14,6 +14,7 @@
   import ImagesComboBox from '../../../components/ImagesComboBox.svelte';
   import Button from '../../../components/Button.svelte';
   import TupleComboBox from '../../../components/TupleComboBox.svelte';
+  import RecipeComboBox from '../../../components/RecipeComboBox.svelte';
 
   $: {
     if ($page.params.slug) {
@@ -100,10 +101,18 @@
         });
         ingredientsArray.set(ingredients);
 
-        event.tags.forEach((e) => {
+        event.tags.forEach(async (e) => {
           if (e[0] === 'cook_time') cooktime = e[1];
           if (e[0] === 'prep_time') preptime = e[1];
           if (e[0] === 'servings') servings = e[1];
+          if (e[0] === 'a') {
+            const addr = e[1].split(':');
+            if (addr[0] === '35000') {
+			  const ne = await $ndk.fetchEvent(addr[1]);
+              $selectedRecipesArray.set(addr[1], ne?.tagValue('title')!);
+			  selectedRecipesArray.set($selectedRecipesArray);
+            }
+          }
         });
       }
     }
@@ -112,6 +121,7 @@
   let title = '';
   let images: Writable<string[]> = writable([]);
   let selectedTags: Writable<recipeTagSimple[]> = writable([]);
+  let selectedRecipesArray: Writable<Map<string, string>> = writable(new Map());
   let summary = '';
   let preptime = '';
   let cooktime = '';
@@ -256,6 +266,11 @@
       rows="6"
       class="input"
     />
+  </div>
+
+  <div class="flex flex-col gap-4">
+    <h3>Related Recipes</h3>
+    <RecipeComboBox placeholder="Add one or more related recipes" {selectedRecipesArray} />
   </div>
 
   <div class="flex flex-col gap-4">

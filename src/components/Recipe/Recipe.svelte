@@ -40,13 +40,13 @@
       {
         authors: [$userPublickey],
         limit: 256,
-        kinds: [30001],
+        kinds: [30003],
         '#t': ['nostrcooking']
       },
       {
         '#d': ['nostrcooking-bookmarks'],
         authors: [$userPublickey],
-        kinds: [30001]
+        kinds: [30003]
       }
     ]);
     listsArr = Array.from(evts).sort((a, b) => {
@@ -67,10 +67,10 @@
       if (!currentList) break;
       let newEvents = currentList.getMatchingTags('a');
       const nevent = new NDKEvent($ndk);
-      nevent.kind = 30001;
+      nevent.kind = 30003;
       if (toggleListArr[i] !== 'nostrcooking-bookmarks') nevent.tags.push(['t', 'nostrcooking']);
       nevent.tags.push(['d', toggleListArr[i]]);
-      nevent.tags.push(['title', currentList.getMatchingTags('title')[0][1]]);
+      nevent.tags.push(['', currentList.getMatchingTags('name')[0][1]]);
       const summary = currentList.getMatchingTags('summary');
       if (summary.length > 0) {
         nevent.tags.push(['summary', summary[0][1]]);
@@ -132,7 +132,7 @@
         <div class="flex flex-col gap-2">
           {#each lists as list, index}
             <div class="flex gap-14 w-full">
-              <p class="font-semibold">{list.getMatchingTags('title')[0][1]}</p>
+              <p class="font-semibold">{list.getMatchingTags('name')[0][1]}</p>
               <input
                 class="self-center"
                 type="checkbox"

@@ -30,7 +30,7 @@
         '#d': [b.identifier],
         // @ts-ignore
         authors: [b.pubkey],
-        kinds: [30001]
+        kinds: [30003]
       });
       if (e) {
         event = e;
@@ -44,7 +44,7 @@
           identifier: e.tags.find((z) => z[0] == 'd')?.[1],
           // @ts-ignore
           kind: e.kind,
-          pubkey: e.author.hexpubkey
+          pubkey: e.author.pubkey
         });
         goto(`/list/${c}`);
       }
@@ -81,7 +81,7 @@
   }
 
   $: og_meta = {
-    title: event ? event.tags.find((t) => t[0] == 'title')?.[1] + ' list' : 'Unknown Recipe list',
+    title: event ? event.tags.find((t) => t[0] == 'name')?.[1] + ' list' : 'Unknown Recipe list',
     description: 'View this list on Zap Cooking'
   };
 </script>
@@ -108,12 +108,12 @@
 {#if loaded && event}
   <div class="mb-6 prose">
     <h1 class="mb-0">
-      {event.tags.find((t) => t[0] == 'title')?.[1]}
+      {event.tags.find((t) => t[0] == 'name')?.[1]}
     </h1>
     <div class="flex flex-col">
       <AuthorProfile pubkey={event.author.pubkey} />
       <div class="flex gap-2">
-        {#if $userPublickey == event.author.hexpubkey}
+        {#if $userPublickey == event.author.pubkey}
           <a class="underline" href={`/list/${$page.params.slug}/fork`}>Edit</a>
         {/if}
         Updated on {event.created_at && formatDate(event.created_at)}

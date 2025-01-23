@@ -23,9 +23,9 @@
     disablePublishButton = true;
     try {
       const event = new NDKEvent($ndk);
-      event.kind = 30001;
+      event.kind = 30003;
       event.tags.push(['d', title.toLowerCase().replaceAll(' ', '-')]);
-      event.tags.push(['title', title]);
+      event.tags.push(['name', title]);
       event.tags.push(['t', 'nostrcooking']);
       if (summary !== '') {
         event.tags.push(['summary', summary]);
@@ -44,7 +44,7 @@
       });
       let naddr = nip19.naddrEncode({
         identifier: title.toLowerCase().replaceAll(' ', '-'),
-        kind: 30001,
+        kind: 30003,
         pubkey: event.pubkey
       });
       setTimeout(() => {
