@@ -35,7 +35,6 @@
     if (u) {
       user = u;
     }
-
     // load event
     let e = await $ndk.fetchEvent({
       // @ts-ignore
