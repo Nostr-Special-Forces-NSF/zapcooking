@@ -62,8 +62,8 @@
   </h5>
 </a>
 
-<style lang="postcss">
+<style global lang="postcss">
   .image {
-    @apply rounded-2xl w-[160px] h-[237px] cursor-pointer relative overflow-hidden object-cover bg-cover bg-center aspect-auto before:animate-pulse;
+    @reference rounded-2xl w-[160px] h-[237px] cursor-pointer relative overflow-hidden object-cover bg-cover bg-center aspect-auto before:animate-pulse;
   }
 </style>

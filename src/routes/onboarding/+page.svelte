@@ -1,18 +1,17 @@
 <script lang="ts">
   import { goto } from '$app/navigation';
-  import { getPublicKey, nip06, nip19 } from 'nostr-tools';
-  import ImageUploader from '../../components/ImageUploader.svelte';
+  import { getPublicKey, nip19 } from 'nostr-tools';
   import { NDKEvent, NDKPrivateKeySigner } from '@nostr-dev-kit/ndk';
   import { browser } from '$app/environment';
   import { ndk, userPublickey } from '$lib/nostr';
   import { onMount } from 'svelte';
   import Button from '../../components/Button.svelte';
   import { Fetch } from 'hurdak';
+  import { generateSeedWords, privateKeyFromSeedWords } from 'nostr-tools/nip06';
 
   let step = 0;
   let seed = '';
-  let privateKey = '';
-  //let nsec = "";
+  let privateKey: Uint8Array;
   let npub = '';
 
   let disableStepButtons = false;
@@ -24,22 +23,19 @@
     goto('/settings');
   }
 
-  async function loginWithPrivateKey(privateKey: string) {
+  async function loginWithPrivateKey(privateKey: Uint8Array) {
     if (browser && privateKey) {
       let pk = privateKey;
       if (!$ndk.signer) {
-        if (pk.startsWith('nsec1')) {
-          pk = nip19.decode(pk).data.toString();
-        }
         const signer = new NDKPrivateKeySigner(pk);
         $ndk.signer = signer;
         ndk.set($ndk);
       }
       if ($ndk.signer) {
-        localStorage.setItem('nostrcooking_privateKey', pk);
+        localStorage.setItem('nostrcooking_privateKey', pk.toString());
       }
       if ($ndk.signer && $userPublickey == '') {
-        const newUserPublicKey = (await $ndk.signer.user()).hexpubkey;
+        const newUserPublicKey = (await $ndk.signer.user()).pubkey;
         localStorage.setItem('nostrcooking_loggedInPublicKey', newUserPublicKey);
         $userPublickey = newUserPublicKey;
         userPublickey.set($userPublickey);
@@ -50,7 +46,7 @@
   async function continuestep() {
     disableStepButtons = true;
     if (step == 1) {
-      privateKey = nip06.privateKeyFromSeedWords(seed);
+      privateKey = privateKeyFromSeedWords(seed);
       npub = nip19.npubEncode(getPublicKey(privateKey));
       await loginWithPrivateKey(privateKey);
     }
@@ -86,7 +82,7 @@
   }
 
   onMount(async () => {
-    seed = nip06.generateSeedWords();
+    seed = generateSeedWords();
   });
 
   let input: HTMLElement, listener;
@@ -137,7 +133,7 @@
   <title>welcome to zap.cooking</title>
 </svelte:head>
 
-<div class="prose flex flex-col text-black mb-4 mx-auto">
+<div class="prose mx-auto mb-4 flex flex-col text-black">
   <h1>Welcome</h1>
   {#if step == 0}
     <p>
@@ -154,7 +150,7 @@
     <p>
       Here, you can securely <button
         class="inline underline"
-        on:click={() => (seed = nip06.generateSeedWords())}>generate</button
+        on:click={() => (seed = generateSeedWords())}>generate</button
       > 12 seed words ("seed pharse"). These seed words serve as your private key; which will serve as
       your permanent password for the nostr network; It's crucial to store them in a secure location
       and avoid sharing them with anyone.
@@ -176,12 +172,12 @@
       Regarding your profile, we need your input to create it. Please provide the following details
       for publication.
     </p>
-    <div class="flex gap-4 md:gap-10 mx-auto">
+    <div class="mx-auto flex gap-4 md:gap-10">
       <div class="flex flex-col self-center">
         <h2 class="text-white">Picture</h2>
         <label for="file-upload" class="cursor-pointer self-center">
           <img
-            class="w-[100px] h-[100px] md:w-[200px] md:h-[200px] rounded-full bg-input self-center"
+            class="bg-input h-[100px] w-[100px] self-center rounded-full md:h-[200px] md:w-[200px]"
             src={picture}
             alt="Profile"
           />
@@ -190,7 +186,7 @@
       </div>
       <div class="flex flex-col gap-2 self-center">
         <h2>Display Name</h2>
-        <p class="break-words hidden md:visible">This will be visible to others.</p>
+        <p class="hidden break-words md:visible">This will be visible to others.</p>
         <input bind:value={name} class="input" type="text" placeholder="Zap Cooking Chef" />
       </div>
     </div>
@@ -198,7 +194,7 @@
     <p>Okay, now you are ready to explore Nostr.</p>
   {/if}
 
-  <div class="flex mb-4">
+  <div class="mb-4 flex">
     <div class="flex-1">
       <Button on:click={backstep} disabled={disableStepButtons} primary={false}>Back</Button>
     </div>

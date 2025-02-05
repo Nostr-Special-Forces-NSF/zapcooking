@@ -225,11 +225,12 @@
                   Copy
                 </a>
               {/if}
-              <button class="flex gap-2 cursor-pointer" on:click={() => (bookmarkModal = true)}>
+            </button>
+			<button class="flex gap-2 cursor-pointer" on:click={() => (bookmarkModal = true)}>
                 <BookmarkIcon size={24} />
                 Save
               </button>
-            </button>
+
           </div>
         {/if}
       </div>

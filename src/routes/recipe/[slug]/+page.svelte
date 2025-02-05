@@ -1,7 +1,7 @@
 <script lang="ts">
   import { page } from '$app/stores';
   import { ndk } from '$lib/nostr';
-  import type { NDKEvent } from '@nostr-dev-kit/ndk';
+  import type { NDKEvent, NDKFilter } from '@nostr-dev-kit/ndk';
   import { nip19 } from 'nostr-tools';
   import { goto } from '$app/navigation';
   import Recipe from '../../../components/Recipe/Recipe.svelte';
@@ -45,7 +45,7 @@
       let e = await $ndk.fetchEvent({
         '#d': [b.identifier],
         authors: [b.pubkey],
-        kinds: [35000]
+        kinds: [35000],
       });
       if (e) {
         event = e;

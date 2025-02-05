@@ -112,7 +112,7 @@
           {/if}
         </div>
         <input type="text" class="input" bind:value={amount} />
-        <textarea rows="2" class="input" bind:value={message} placeholder="Message (optional)" />
+        <textarea rows="2" class="input" bind:value={message} placeholder="Message (optional)"></textarea>
       </div>
       <div class="flex gap-2 justify-end">
         <Button

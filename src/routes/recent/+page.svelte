@@ -44,6 +44,10 @@
     });
     events = evtsArr;
   });
+
+  function handleChange(e: any) {
+    window.location.href = e.target.value;
+  }
 </script>
 
 <svelte:head>
@@ -73,7 +77,7 @@
   </div>
 
   <div class="lg:hidden">
-    <select class="w-full input" onchange="window.location.href=this.value">
+    <select class="w-full input" on:change={handleChange}>
       <option value="">All categories</option>
       {#each popTags as tag}
         <option value="/tag/{tag.title}">{tag.title}</option>
