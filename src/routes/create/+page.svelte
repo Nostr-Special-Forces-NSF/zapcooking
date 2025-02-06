@@ -14,6 +14,7 @@
   import StringComboBox from '../../components/StringComboBox.svelte';
   import TupleComboBox from '../../components/TupleComboBox.svelte';
   import RecipeComboBox from '../../components/RecipeComboBox.svelte';
+    import MarkdownEditor from '../../components/MarkdownEditor.svelte';
 
   let previewEvent: NDKEvent | undefined = undefined;
 
@@ -170,7 +171,7 @@
       bind:value={summary}
       rows="6"
       class="input"
-    />
+    ></textarea>
   </div>
 
   <div class="flex flex-col gap-4">
@@ -205,6 +206,7 @@
   <div class="flex flex-col gap-2">
     <h3>Directions*</h3>
     <StringComboBox placeholder={'Bake for 30 min'} selected={directionsArray} showIndex={false} />
+	<MarkdownEditor content={$directionsArray.toString()}/>
   </div>
   <div>
     <h3>Cover Image*</h3>
@@ -214,7 +216,6 @@
   <div class="flex justify-end">
     <div>
       {resultMessage}
-      <button />
       <Button disabled={disablePublishButton} type="submit">Publish</Button>
     </div>
   </div>

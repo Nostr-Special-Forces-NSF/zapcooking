@@ -41,20 +41,24 @@
   });
 
   function handleSelection(event: Event) {
-	const select = (event.target as HTMLSelectElement)
+    const select = event.target as HTMLSelectElement;
     const selectedId = select.value;
-	const selectedText = select.options[select.selectedIndex].text;
+    const selectedText = select.options[select.selectedIndex].text;
     selectedRecipesArray.update((store) => store.set(selectedId, selectedText));
   }
 
   function removeItem(index: string) {
-	selectedRecipesArray.update((store) => store.delete(index) ? store : store);
+    selectedRecipesArray.update((store) => (store.delete(index) ? store : store));
   }
-
 </script>
 
 <div class="mb-0 flex flex-col gap-2">
-  <select id="recipe-select" on:change={handleSelection} disabled={$loading}>
+  <select
+    class="bg-input flex rounded-xl border-none p-3"
+    id="recipe-select"
+    on:change={handleSelection}
+    disabled={$loading}
+  >
     {#if $loading}
       <option value="" disabled>Loading recipes...</option>
     {:else if $recipes.size > 0}
@@ -69,28 +73,20 @@
     {/if}
   </select>
   {#if $selectedRecipesArray.size > 0}
-  <ul class="flex flex-col gap-2">
-	{#each $selectedRecipesArray as item}
-	  <li class="flex input">
-		  <span class="grow">{item[1]}</span
-		  >
-		  <div class="flex gap-2">
-			<button class="self-center text-danger" on:click={() => removeItem(item[0])}>
-			  <TrashIcon />
-			</button>
-		  </div>
-	  </li>
-	{/each}
-  </ul>
-
+    <ul class="flex flex-col gap-2">
+      {#each $selectedRecipesArray as item}
+        <li class="input flex">
+          <span class="grow">{item[1]}</span>
+          <div class="flex gap-2">
+            <button class="text-danger self-center" on:click={() => removeItem(item[0])}>
+              <TrashIcon />
+            </button>
+          </div>
+        </li>
+      {/each}
+    </ul>
   {/if}
 </div>
 
 <style>
-  select {
-    padding: 0.5rem;
-    font-size: 1rem;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-  }
 </style>

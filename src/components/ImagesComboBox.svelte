@@ -32,8 +32,8 @@
     <div class="mt-1">
       <ImageUploader setUrl={(a) => addImage(a) && (refresh = {})} />
     </div>
-	<div class="flex flex-col gap-4 mt-1">
-		<input placeholder="Or input an existing URL" on:input="{(a)=> addImage((a.currentTarget.value))}"/>
+	<div class="flex flex-col gap-4 mt-4">
+		<input class="input" placeholder="Or input an existing URL" on:input="{(a)=> addImage((a.currentTarget.value))}"/>
 	</div>
   </div>
 {/key}

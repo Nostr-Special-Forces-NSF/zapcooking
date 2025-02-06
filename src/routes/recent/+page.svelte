@@ -4,9 +4,6 @@
   import { onMount } from 'svelte';
   import Feed from '../../components/Feed.svelte';
   import { validateMarkdownTemplate } from '$lib/pharser';
-  import TagsSearchAutocomplete from '../../components/TagsSearchAutocomplete.svelte';
-  import { goto } from '$app/navigation';
-  import { Name } from '@nostr-dev-kit/ndk-svelte-components';
   import { recipeTags } from '$lib/consts';
 
   function isPopTag(tag: string): boolean {

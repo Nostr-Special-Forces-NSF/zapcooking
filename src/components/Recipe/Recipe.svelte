@@ -8,7 +8,6 @@
   import Button from '../Button.svelte';
   import { translateOption } from '$lib/state';
   import { translate } from '$lib/translation';
-  import { parseMarkdown } from '$lib/pharser';
   import TotalZaps from './TotalZaps.svelte';
   import TotalLikes from './TotalLikes.svelte';
   import TotalComments from './TotalComments.svelte';
@@ -21,6 +20,8 @@
   import { fade } from 'svelte/transition';
   import Feed from '../Feed.svelte';
   import { CopySimple } from 'phosphor-svelte';
+  import { marked } from 'marked';
+  import DOMPurify from 'dompurify';
 
   export let event: NDKEvent;
   export let embeddedRecipes: NDKEvent[];
@@ -58,6 +59,10 @@
       return a.replaceableDTag().localeCompare(b.replaceableDTag());
     });
     return listsArr;
+  }
+
+  function parseMarkdown(content: string): string {
+    return DOMPurify.sanitize(marked(content));
   }
 
   // If a list's d id is found here, then modifyLists will make the inverse change to what's there currently.
@@ -176,7 +181,7 @@
   </div>
 </Modal>
 
-<article class="mx-auto max-w-[760px]" >
+<article class="mx-auto max-w-[760px]">
   {#if event}
     <div class="flex flex-col gap-6">
       <div class="flex flex-col gap-4">
@@ -311,21 +316,15 @@
         {/if}
       </div>
       {#if embeddedRecipes.length > 0}
-        <div>
+        <div class="flex flex-col gap-2">
           <h2>References the following recipes</h2>
-          <Feed events={embeddedRecipes} />
+          <div><Feed events={embeddedRecipes} /></div>
         </div>
       {/if}
       <div class="bg-input flex flex-col items-center gap-4 rounded-3xl py-6">
         <h2>Enjoy this recipe?</h2>
         <Button on:click={() => (zapModal = true)}>Zap it</Button>
       </div>
-      <!--
-      <div class="flex flex-col gap-4">
-        {firstTag}
-        <h2>More {firstTag[1].split("nostrcooking-")[1]}</h2>
-      </div>
-      -->
       <Comments {event} />
     </div>
   {:else}
