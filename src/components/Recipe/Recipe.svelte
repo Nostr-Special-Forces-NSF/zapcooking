@@ -14,7 +14,6 @@
   import TotalComments from './TotalComments.svelte';
   import Comments from '../Comments.svelte';
   import ZapModal from '../ZapModal.svelte';
-  import { requestProvider } from 'webln';
   import { nip19 } from 'nostr-tools';
   import Modal from '../Modal.svelte';
   import { clickOutside } from '$lib/clickOutside';
@@ -135,7 +134,7 @@
       {:then lists}
         <div class="flex flex-col gap-2">
           {#each lists as list, index}
-            <div class="flex gap-14 w-full">
+            <div class="flex w-full gap-14">
               <p class="font-semibold">{list.getMatchingTags('name')[0][1]}</p>
               <input
                 class="self-center"
@@ -164,7 +163,7 @@
     {/if}
   </div>
   <div class="flex">
-    <a href="/list/create" target="_blank" class="text-sm underline grow self-center"
+    <a href="/list/create" target="_blank" class="grow self-center text-sm underline"
       >Create a New List</a
     >
     <Button
@@ -177,7 +176,7 @@
   </div>
 </Modal>
 
-<article class="max-w-[760px] mx-auto">
+<article class="mx-auto max-w-[760px]" >
   {#if event}
     <div class="flex flex-col gap-6">
       <div class="flex flex-col gap-4">
@@ -190,10 +189,10 @@
         <AuthorProfile pubkey={event.author.pubkey} />
       </div>
       {#each event.tags.filter((e) => e[0] === 'image') as image, i}
-        <img class="rounded-3xl aspect-video object-cover" src={image[1]} alt="Image {i + 1}" />
+        <img class="aspect-video rounded-3xl object-cover" src={image[1]} alt="Image {i + 1}" />
       {/each}
       <div class="flex">
-        <div class="flex gap-6 grow">
+        <div class="flex grow gap-6">
           <TotalLikes {event} />
           <TotalComments {event} />
           <button class="cursor-pointer" on:click={() => (zapModal = true)}>
@@ -201,7 +200,7 @@
           </button>
         </div>
         <button
-          class="cursor-pointer hover:bg-input rounded p-0.5 transition duration-300"
+          class="hover:bg-input cursor-pointer rounded-sm p-0.5 transition duration-300"
           on:click={() => (dropdownActive = !dropdownActive)}
         >
           <DotsIcon size={24} />
@@ -212,25 +211,34 @@
               on:click={() => (dropdownActive = false)}
               use:clickOutside
               on:click_outside={() => (dropdownActive = false)}
-              class="flex flex-col right-0 gap-4 absolute z-20 bg-white rounded-3xl drop-shadow px-5 py-6 my-6"
+              class="absolute right-0 z-20 my-6 flex flex-col gap-4 rounded-3xl bg-white px-5 py-6 drop-shadow-sm"
             >
               {#if event.author?.pubkey === $userPublickey}
-                <a class="flex gap-2 cursor-pointer" href="/fork/{naddr}">
+                <a class="flex cursor-pointer gap-2" href="/fork/{naddr}">
                   <PencilIcon size={24} />
                   Edit
                 </a>
               {:else}
-                <a class="flex gap-2 cursor-pointer" href="/fork/{naddr}">
+                <a class="flex cursor-pointer gap-2" href="/fork/{naddr}">
                   <CopySimple size={24} />
                   Copy
                 </a>
               {/if}
-            </button>
-			<button class="flex gap-2 cursor-pointer" on:click={() => (bookmarkModal = true)}>
+              <div
+                class="flex cursor-pointer gap-2"
+                role="button"
+                tabindex="0"
+                on:click={() => (bookmarkModal = true)}
+                on:keydown={(event) => {
+                  if (event.key === 'Enter' || event.key === ' ') {
+                    bookmarkModal = true;
+                  }
+                }}
+              >
                 <BookmarkIcon size={24} />
                 Save
-              </button>
-
+              </div>
+            </button>
           </div>
         {/if}
       </div>
@@ -305,10 +313,10 @@
       {#if embeddedRecipes.length > 0}
         <div>
           <h2>References the following recipes</h2>
-          <Feed events={embeddedRecipes} hideHide={true} />
+          <Feed events={embeddedRecipes} />
         </div>
       {/if}
-      <div class="flex flex-col items-center gap-4 bg-input py-6 rounded-3xl">
+      <div class="bg-input flex flex-col items-center gap-4 rounded-3xl py-6">
         <h2>Enjoy this recipe?</h2>
         <Button on:click={() => (zapModal = true)}>Zap it</Button>
       </div>

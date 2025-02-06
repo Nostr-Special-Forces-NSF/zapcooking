@@ -30,7 +30,7 @@
 </script>
 
 <div id="comments" class="flex gap-4 break-all">
-  <a class="flex flex-shrink-0" href="/user/{nip19.npubEncode(event.pubkey)}"
+  <a class="flex shrink-0" href="/user/{nip19.npubEncode(event.pubkey)}"
     ><Avatar class="rounded-full w-12 h-12" ndk={$ndk} pubkey={event.pubkey} /></a
   >
   <div class="flex flex-col self-center">

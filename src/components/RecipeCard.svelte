@@ -40,17 +40,21 @@
 
     observer.observe(imageElement);
   });
+
+  $: console.log('Generated link:', link);
 </script>
 
 <a
   href={link}
-  class="flex flex-col gap-4 max-w-[160px] place-self-center md:place-self-start self-start hover:text-primary transition-colors duration-300"
+  on:click={(e) => e.stopPropagation()}
+  data-sveltekit-preload
+  class="hover:text-primary flex max-w-[160px] flex-col gap-4 place-self-center self-start transition-colors duration-300 md:place-self-start"
 >
-  <div class="relative image" style={`background-image: url('/placeholder.png');`}>
+  <div class="image relative" style={`background-image: url('/placeholder.png');`}>
     <div
       bind:this={imageElement}
-      class="absolute top-0 left-0 bottom-0 right-0 image hover:scale-105 transition-transform duration-700 ease-in-out"
-    />
+      class="image absolute top-0 right-0 bottom-0 left-0 transition-transform duration-700 ease-in-out hover:scale-105"
+    ></div>
   </div>
 
   <h5 class="text-md leading-tight text-wrap">
@@ -62,8 +66,10 @@
   </h5>
 </a>
 
-<style global lang="postcss">
+<style>
+  @reference "../app.css";
+
   .image {
-    @reference rounded-2xl w-[160px] h-[237px] cursor-pointer relative overflow-hidden object-cover bg-cover bg-center aspect-auto before:animate-pulse;
+    @apply relative aspect-auto h-[237px] w-[160px] cursor-pointer overflow-hidden rounded-2xl bg-cover bg-center object-cover before:animate-pulse;
   }
 </style>

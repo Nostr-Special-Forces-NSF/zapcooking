@@ -201,7 +201,6 @@
     <div class="flex justify-end">
       <div>
         {resultMessage}
-        <button />
         <Button disabled={disablePublishButton} type="submit">Update Bookmarks</Button>
       </div>
     </div>

@@ -142,7 +142,7 @@
           tabindex="0"
           on:keydown={() => (showPrivkey = true)}
           on:click={() => (showPrivkey = true)}
-          class="input !border-accent-gray !border-2 flex flex-wrap text-wrap break-all"
+          class="input border-accent-gray! border-2! flex flex-wrap text-wrap break-all"
         >
           {#if showPrivkey}
             {nip19.nsecEncode(sk)}
@@ -157,7 +157,7 @@
     {/if}
     <h3>Clear all Data</h3>
     <Button
-      class="flex !bg-danger self-start gap-2"
+      class="flex bg-danger! self-start gap-2"
       primary={false}
       on:click={() => (window.location.href = '/clearall')}
     >

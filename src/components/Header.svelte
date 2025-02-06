@@ -38,7 +38,7 @@
 </script>
 
 {#if searchActive}
-  <div class="fixed z-20 w-full h-full top-0 left-0 duration-500 transition-opacity bg-opacity-50 backdrop-blur-sm" transition:blur={{ amount: 10, duration: 300 }}>
+  <div class="fixed z-20 w-full h-full top-0 left-0 duration-500 transition-opacity bg-opacity-50 backdrop-blur-xs" transition:blur={{ amount: 10, duration: 300 }}>
     <div class="fixed z-25 inset-x-0 top-20 w-3/4 md:w-1/2 lg:w-1/3 mx-auto" use:clickOutside on:click_outside={() => (searchActive = false)} >
         <TagsSearchAutocomplete
             placeholderString={"Search by tag, like 'italian', 'steak' or 'glutenfree'."}
@@ -68,7 +68,7 @@
   <div class="flex gap-4 self-center flex-none">
     <div class="block sm:hidden self-center">
       <!-- for some reason if i have all of these selector classes then it styles correctly. wtf. -->
-      <Button class="self-center max-md:w-10 max-md:h-10 flex max-md:justify-center max-md:px-1 max-md:py-1 font-semibold !bg-[#FFECE8]" on:click={() => searchActive = true}>
+      <Button class="self-center max-md:w-10 max-md:h-10 flex max-md:justify-center max-md:px-1 max-md:py-1 font-semibold bg-[#FFECE8]!" on:click={() => searchActive = true}>
           <SearchIcon class="self-center text-primary" size={16} weight="bold" />
       </Button>
     </div>
@@ -100,7 +100,7 @@
               on:keydown={(e) => e.key === 'Escape' && (dropdownActive = false)}
               use:clickOutside
               on:click_outside={() => (dropdownActive = false)}
-              class="flex flex-col right-3 gap-4 absolute z-10 bg-white rounded-3xl drop-shadow px-5 py-6"
+              class="flex flex-col right-3 gap-4 absolute z-10 bg-white rounded-3xl drop-shadow-sm px-5 py-6"
             >
               <button
                 class="flex gap-2 cursor-pointer"

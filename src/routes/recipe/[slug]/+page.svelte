@@ -1,146 +1,108 @@
 <script lang="ts">
+  import { onMount } from 'svelte';
   import { page } from '$app/stores';
   import { ndk } from '$lib/nostr';
-  import type { NDKEvent, NDKFilter } from '@nostr-dev-kit/ndk';
+  import type { NDKEvent } from '@nostr-dev-kit/ndk';
   import { nip19 } from 'nostr-tools';
   import { goto } from '$app/navigation';
   import Recipe from '../../../components/Recipe/Recipe.svelte';
 
   let event: NDKEvent | null = null;
   let embeddedRecipes: NDKEvent[] = [];
-  let naddr: string = '';
-  let prepTime: number = 0;
-  let cookTime: number = 0;
-  let parsedTime: boolean = false;
+  let prepTime = 0;
+  let cookTime = 0;
+  let parsedTime = false;
+  let loading = true;
 
-  $: {
-    if ($page.params.slug) {
-      loadData();
-    }
+  onMount(async () => {
+    await loadData();
     if (event) {
-      let addrs = event.tags.map((t) => {
-        if (t[0] === 'a') {
-          const atags = t[1].split(':');
-          if (atags[0] === '35000') {
-            return atags[1] as string;
-          }
-        }
-      });
-      loadEmbedded(addrs);
+      await loadEmbedded();
     }
-  }
+    loading = false;
+  });
 
   async function loadData() {
-    if ($page.params.slug.startsWith('naddr1')) {
-      const a = nip19.decode($page.params.slug);
-      if (!(a.type == 'naddr')) {
-        throw new Error();
-      }
-      const b = a.data;
-      naddr = nip19.naddrEncode({
-        identifier: b.identifier,
-        pubkey: b.pubkey,
-        kind: 35000
-      });
-      let e = await $ndk.fetchEvent({
-        '#d': [b.identifier],
-        authors: [b.pubkey],
-        kinds: [35000],
-      });
-      if (e) {
-        event = e;
-      }
-    } else {
-      let e = await $ndk.fetchEvent($page.params.slug);
-      if (e) {
-        event = e;
-        const id = e.tags.find((z) => z[0] == 'd')?.[1];
-        if (!id || !e.kind) {
-          throw new Error();
+    console.log('Fetching event for slug:', $page.params.slug);
+
+    try {
+      if ($page.params.slug.startsWith('naddr1')) {
+        const a = nip19.decode($page.params.slug);
+        if (!(a.type == 'naddr')) throw new Error('Invalid Nostr address');
+
+        const b = a.data as nip19.AddressPointer;
+        event = await $ndk.fetchEvent({
+          '#d': [b.identifier],
+          authors: [b.pubkey],
+          kinds: [35000]
+        });
+      } else {
+        event = await $ndk.fetchEvent($page.params.slug);
+
+        if (event) {
+          const id = event.tags.find((z) => z[0] == 'd')?.[1];
+          if (!id || !event.kind) throw new Error('Invalid event data');
+
+          // Redirect if needed
+          const c = nip19.naddrEncode({
+            identifier: id,
+            kind: event.kind,
+            pubkey: event.author.pubkey
+          });
+          goto(`/recipe/${c}`);
         }
-        naddr = nip19.naddrEncode({
-          identifier: id,
-          kind: e.kind,
-          pubkey: e.author.pubkey
-        });
-        const c = nip19.naddrEncode({
-          identifier: id,
-          kind: e.kind,
-          pubkey: e.author.pubkey
-        });
-        goto(`/recipe/${c}`);
       }
+    } catch (error) {
+      console.error('Error loading event:', error);
     }
   }
 
-  async function loadEmbedded(addrs: (string | undefined)[]) {
+  async function loadEmbedded() {
+    if (!event) return;
+    console.log('Loading embedded recipes...');
+
     try {
+      const addrs = event.tags
+        .filter((t) => t[0] === 'a')
+        .map((t) => {
+          const atags = t[1].split(':');
+          return atags[0] === '35000' ? atags[1] : undefined;
+        });
+
       const results = await Promise.all(
         addrs.map((a) => (a ? $ndk.fetchEvent(a) : Promise.resolve(undefined)))
       );
 
-      results.forEach((eEvent) => {
-        if (eEvent) {
-          embeddedRecipes.push(eEvent);
-        }
-      });
-	  if (!parsedTime){
-		getTimes();
-		parsedTime = true;
-	  }
+      embeddedRecipes = results as NDKEvent[];
+
+      if (!parsedTime) {
+        getTimes();
+        parsedTime = true;
+      }
     } catch (error) {
       console.error('Error loading embedded recipes:', error);
     }
   }
 
   function getTimes() {
-    prepTime = parseInt(event!.tagValue('prep_time')!);
-    cookTime = parseInt(event!.tagValue('cook_time')!);
+    prepTime = parseInt(event?.tagValue('prep_time') ?? '0');
+    cookTime = parseInt(event?.tagValue('cook_time') ?? '0');
+
     embeddedRecipes.forEach((e) => {
-      prepTime += parseInt(e.tagValue('prep_time')!);
-      cookTime += parseInt(e.tagValue('cook_time')!);
+      prepTime += parseInt(e.tagValue('prep_time') ?? '0');
+      cookTime += parseInt(e.tagValue('cook_time') ?? '0');
     });
   }
-
-  $: og_meta = {
-    title: event
-      ? event.tags.find((tag) => tag[0] === 'title')?.[1] || event.content.slice(0, 60) + '...'
-      : 'Recipe on Zap Cooking',
-    description: event ? event.content.slice(0, 200) + '...' : 'Click to view on Zap Cooking',
-    image: event ? event.tags.find((tag) => tag[0] === 'image')?.[1] || '' : ''
-  };
 </script>
 
-<svelte:head>
-  <title
-    >{event
-      ? event.tags.find((e) => e[0] == 'title')?.[1]
-        ? event.tags.find((e) => e[0] == 'title')?.[1]
-        : event.tags.find((e) => e[0] == 'd')?.[1]
-      : '...'} on zap.cooking</title
-  >
-
-  {#key og_meta}
-    <meta name="description" content={og_meta.description} />
-    <meta property="og:url" content={`https://zap.cooking/recipe/${$page.params.slug}`} />
-    <meta property="og:type" content="article" />
-    <meta property="og:title" content={og_meta.title} />
-    <meta property="og:description" content={og_meta.description} />
-    <meta property="og:image" content={og_meta.image} />
-
-    <meta name="twitter:card" content="summary_large_image" />
-    <meta property="twitter:domain" content="zap.cooking" />
-    <meta property="twitter:url" content={`https://zap.cooking/recipe/${$page.params.slug}`} />
-    <meta name="twitter:title" content={og_meta.title} />
-    <meta name="twitter:description" content={og_meta.description} />
-    <meta name="twitter:image" content={og_meta.image} />
-  {/key}
-</svelte:head>
-
-{#if event}
+{#if loading}
+  <div class="flex h-screen items-center justify-center">
+    <img class="w-64" src="/pan-animated.svg" alt="Loading" />
+  </div>
+{:else if event}
   <Recipe {event} {embeddedRecipes} {prepTime} {cookTime} />
 {:else}
-  <div class="flex justify-center items-center h-screen">
-    <img class="w-64" src="/pan-animated.svg" alt="Loading" />
+  <div class="flex h-screen items-center justify-center">
+    <p class="text-red-500">Failed to load recipe. Check console logs.</p>
   </div>
 {/if}

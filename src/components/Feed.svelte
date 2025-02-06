@@ -3,10 +3,7 @@
   import RecipeCard from './RecipeCard.svelte';
 
   export let events: NDKEvent[];
-  export let hideHide = false;
   export let lists = false;
-  //if (!lists)
-    //events = events.filter((e) => typeof validateMarkdownTemplate(e.content) !== 'string');
 </script>
 
 <svelte:head>
@@ -14,23 +11,23 @@
 </svelte:head>
 
 <div
-  class="grid gap-x-2 gap-y-10 grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 xl:grid-cols-7 2xl:grid-cols-8"
+  class="grid grid-cols-2 gap-x-2 gap-y-10 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 xl:grid-cols-7 2xl:grid-cols-8"
 >
   {#if events.length > 0}
     {#each events as event}
-        <RecipeCard list={lists} {event} />
+      <RecipeCard list={lists} {event} />
     {/each}
   {:else}
     {#each new Array(24) as i}
       <div
-        class="flex flex-col gap-4 max-w-[160px] place-self-center md:place-self-start self-start hover:text-primary transition-colors duration-300"
+        class="hover:text-primary flex max-w-[160px] flex-col gap-4 place-self-center self-start transition-colors duration-300 md:place-self-start"
       >
         <div
-          class="rounded-3xl w-[160px] h-[237px] cursor-pointer transition relative overflow-hidden bg-cover bg-center animate-pulse"
+          class="relative h-[237px] w-[160px] animate-pulse cursor-pointer overflow-hidden rounded-3xl bg-cover bg-center transition"
           style="background-image: url('/placeholder.png');"
-        />
+        ></div>
 
-        <h5 class="text-md leading-tight text-wrap text-input bg-input animate-pulse">
+        <h5 class="text-md text-input bg-input animate-pulse leading-tight text-wrap">
           PLACEHOLDER RECIPE {i}
         </h5>
       </div>

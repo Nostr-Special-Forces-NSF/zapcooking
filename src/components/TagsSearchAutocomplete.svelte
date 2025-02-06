@@ -66,7 +66,7 @@
 
 <div class="relative flex-1">
   <form
-    class="flex rounded-xl shadow-sm bg-input"
+    class="flex rounded-xl shadow-xs bg-input"
     on:submit|preventDefault={() => {
       if (tagquery) {
         action(tagquery);
@@ -74,7 +74,7 @@
       }
     }}
   >
-    <div class="flex mx-0.5 items-stretch flex-grow focus-within:z-10">
+    <div class="flex mx-0.5 items-stretch grow focus-within:z-10">
       {#if autofocus}
       <input
         bind:value={tagquery}
@@ -100,7 +100,7 @@
   </form>
   {#if showAutocomplete && filteredTags.length > 0}
     <ul
-      class="max-h-[256px] overflow-y-scroll absolute top-full left-0 w-full bg-white border border-gray-300 shadow-lg rounded-xl mt-1 z-[60]"
+      class="max-h-[256px] overflow-y-scroll absolute top-full left-0 w-full bg-white border border-gray-300 shadow-lg rounded-xl mt-1 z-60"
     >
       {#each filteredTags as tag (tag.title)}
         <!-- svelte-ignore a11y-click-events-have-key-events -->

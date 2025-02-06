@@ -87,6 +87,6 @@
 
   <div class="flex flex-col gap-2">
     <h2>Recent Recipes</h2>
-    <div><Feed {events} hideHide={true} /></div>
+    <div><Feed {events}/></div>
   </div>
 </div>

@@ -116,7 +116,7 @@
       </div>
       <div class="flex gap-2 justify-end">
         <Button
-          class="!text-black bg-white border border-[#ECECEC] hover:bg-accent-gray"
+          class="text-black! bg-white border border-[#ECECEC] hover:bg-accent-gray"
           on:click={() => open = false}>Cancel</Button
         >
         <Button on:click={() => submitNow(false)}>Zap with Extension</Button>

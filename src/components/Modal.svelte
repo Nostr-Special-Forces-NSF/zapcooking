@@ -17,7 +17,7 @@
     on:click|self={close}
     role="presentation"
     transition:blur={{ duration: 250 }}
-    class="fixed top-0 left-0 z-30 w-full h-full backdrop-brightness-50 backdrop-blur"
+    class="fixed top-0 left-0 z-30 w-full h-full backdrop-brightness-50 backdrop-blur-sm"
   >
     <dialog
       transition:scale={{ duration: 250 }}

@@ -119,7 +119,7 @@
     <span class="flex grow text-danger self-center">{nsecError}</span>
     <div class="flex gap-2 justify-end">
       <Button
-        class="!text-black bg-white border border-[#ECECEC] hover:bg-accent-gray"
+        class="text-black! bg-white border border-[#ECECEC] hover:bg-accent-gray"
         on:click={nsecModalCleanup}>Cancel</Button
       >
       <Button on:click={loginWithSk}>Login</Button>
@@ -139,7 +139,7 @@
     <span class="flex grow text-danger self-center">{seedError}</span>
     <div class="flex gap-2 justify-end">
       <Button
-        class="!text-black bg-white border border-[#ECECEC] hover:bg-accent-gray"
+        class="text-black! bg-white border border-[#ECECEC] hover:bg-accent-gray"
         on:click={seedModalCleanup}>Cancel</Button
       >
       <Button on:click={loginWithSeed}>Login</Button>
@@ -153,7 +153,7 @@
     <div class="flex flex-col gap-4">
       <button
         on:click={loginWithNIP07}
-        class="flex w-[320px] h-[52px] gap-2 shadow rounded-xl justify-center text-center font-semibold border box-border border-[#D1D3DC]"
+        class="flex w-[320px] h-[52px] gap-2 shadow-sm rounded-xl justify-center text-center font-semibold border box-border border-[#D1D3DC]"
       >
         <span
           class="flex justify-center items-center rounded-full bg-[#FA9101] self-center w-10 h-10 text-white"
@@ -164,7 +164,7 @@
       </button>
       <button
         on:click={() => (nsecModal = true)}
-        class="flex w-[320px] h-[52px] gap-2 shadow rounded-xl justify-center text-center font-semibold border box-border border-[#D1D3DC]"
+        class="flex w-[320px] h-[52px] gap-2 shadow-sm rounded-xl justify-center text-center font-semibold border box-border border-[#D1D3DC]"
       >
         <span
           class="flex justify-center items-center rounded-full bg-danger self-center w-10 h-10 text-white"
@@ -175,7 +175,7 @@
       </button>
       <button
         on:click={() => (seedModal = true)}
-        class="flex w-[320px] h-[52px] gap-2 shadow rounded-xl justify-center text-center font-semibold border box-border border-[#D1D3DC]"
+        class="flex w-[320px] h-[52px] gap-2 shadow-sm rounded-xl justify-center text-center font-semibold border box-border border-[#D1D3DC]"
       >
         <span
           class="flex justify-center items-center rounded-full bg-green-500 self-center w-10 h-10 text-white"

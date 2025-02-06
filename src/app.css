@@ -1,20 +1,53 @@
-@import "tailwindcss";
+@import 'tailwindcss' layer(base);
 
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@plugin '@tailwindcss/typography';
+@plugin '@tailwindcss/forms';
+@plugin '@tailwindcss/postcss';
 
-@font-face {
-  font-family: 'Geist';
-  src: url('/GeistVariableVF.ttf') format('truetype');
-  font-style: normal;
-  font-weight: 100 900;
-  font-stretch: 0% 200%;
-  font-display: auto;
+@source './**/*.{html,js,svelte,ts,css}';
+
+@theme {
+  --font-sans: Geist, ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji',
+    'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
+
+  --color-primary: #ec4700;
+  --color-danger: #ff3535;
+  --color-input: #f6f6f6;
+  --color-accent-gray: #dddddd;
+  --color-caption: #716f6c;
 }
 
-.input {
-  @apply bg-input border-input focus:ring-primary focus:border-primary rounded-xl p-3 transition duration-300;
+/*
+  The default border color has changed to `currentColor` in Tailwind CSS v4,
+  so we've added these compatibility styles to make sure everything still
+  looks the same as it did with Tailwind CSS v3.
+
+  If we ever want to remove these styles, we need to add an explicit border
+  color utility to any element that depends on these defaults.
+*/
+@layer base {
+  *,
+  ::after,
+  ::before,
+  ::backdrop,
+  ::file-selector-button {
+    border-color: var(--color-gray-200, currentColor);
+  }
+}
+
+@layer utilities {
+  @font-face {
+    font-family: 'Geist';
+    src: url('/GeistVariableVF.ttf') format('truetype');
+    font-style: normal;
+    font-weight: 100 900;
+    font-stretch: 0% 200%;
+    font-display: auto;
+  }
+
+  .input {
+    @apply bg-input border-input focus:ring-primary focus:border-primary rounded-xl p-3 transition duration-300;
+  }
 }
 
 @layer base {

@@ -40,7 +40,7 @@
   loading = false;
 </script>
 
-<div class="flex gap-1.5 hover:bg-input rounded px-0.5 transition duration-300">
+<div class="flex gap-1.5 hover:bg-input rounded-sm px-0.5 transition duration-300">
   <LightningIcon size={24} color={hasUserZapped ? '#facc15' : ''} weight={hasUserZapped ? "fill" : "regular"} />
   {#if loading}...{:else}{formatAmount(totalZapAmount / 1000)} sats{/if}
 </div>

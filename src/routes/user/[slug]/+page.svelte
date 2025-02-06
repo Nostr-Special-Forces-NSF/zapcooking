@@ -215,7 +215,7 @@
   </div>
   <div class="flex gap-2 justify-end">
     <Button
-      class="!text-black bg-white border border-[#ECECEC] hover:bg-accent-gray"
+      class="text-black! bg-white border border-[#ECECEC] hover:bg-accent-gray"
       on:click={editModalCleanup}>Cancel</Button
     >
     <Button on:click={updateProfile}>Save</Button>
@@ -244,12 +244,12 @@
     </div>
     <div class="flex gap-2 self-center">
       <Button
-        class="flex self-center !bg-accent-gray !text-[#675F5F] !px-3"
+        class="flex self-center bg-accent-gray! text-[#675F5F]! px-3!"
         on:click={() => (qrModal = true)}><QrIcon /></Button
       >
       {#if hexpubkey !== $userPublickey}
         <Button
-          class="flex self-center !bg-accent-gray !text-[#675F5F] !px-3"
+          class="flex self-center bg-accent-gray! text-[#675F5F]! px-3!"
           on:click={() => (zapModal = true)}><LightningIcon /></Button
         >
         <!-- <Button class="flex self-center">Follow</Button> -->

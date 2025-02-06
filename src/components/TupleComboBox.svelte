@@ -97,7 +97,7 @@
               {#if showIndex && index > 0}
                 <button
                   type="button"
-                  class="px-2 py-[0.05rem] rounded"
+                  class="px-2 py-[0.05rem] rounded-sm"
                   on:click={() => moveItemUp(index)}
                 >
                   ↑
@@ -106,7 +106,7 @@
               {#if showIndex && index < $selected.length - 1}
                 <button
                   type="button"
-                  class="px-2 py-[0.05rem] rounded"
+                  class="px-2 py-[0.05rem] rounded-sm"
                   on:click={() => moveItemDown(index)}
                 >
                   ↓

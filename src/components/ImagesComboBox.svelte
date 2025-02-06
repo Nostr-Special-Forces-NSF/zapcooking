@@ -44,11 +44,11 @@
       {#each $uploadedImages as image, index}
         <li class="flex items-center justify-between p-2 hover:bg-gray-100">
           <div class="flex items-center">
-            <img class="rounded" src={image} alt="Uploaded" />
+            <img class="rounded-sm" src={image} alt="Uploaded" />
           </div>
           <button
             type="button"
-            class="ml-2 px-3 py-[0.05rem] bg-red-500 hover:bg-red-600 text-white rounded"
+            class="ml-2 px-3 py-[0.05rem] bg-red-500 hover:bg-red-600 text-white rounded-sm"
             on:click={() => removeImage(index)}
           >
             X
