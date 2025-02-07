@@ -5,7 +5,6 @@
   import { NDKEvent } from '@nostr-dev-kit/ndk';
   import { nip19 } from 'nostr-tools';
   import { onMount } from 'svelte';
-  import StringComboBox from '../../../../components/StringComboBox.svelte';
   import { writable, type Writable } from 'svelte/store';
   import ListComboBox from '../../../../components/ListComboBox.svelte';
   import Button from '../../../../components/Button.svelte';
@@ -58,7 +57,7 @@
           identifier: e.tags.find((z) => z[0] == 'd')?.[1],
           // @ts-ignore
           kind: e.kind,
-          pubkey: e.author.hexpubkey
+          pubkey: e.author.pubkey
         });
         goto(`/list/${c}/edit`);
       }
@@ -224,7 +223,7 @@
         bind:value={summary}
         rows="6"
         class="input"
-      />
+      ></textarea>
     </div>
 
     <div>
@@ -249,7 +248,6 @@
     <div class="flex justify-end">
       <div>
         {resultMessage}
-        <button />
         <Button disabled={disablePublishButton} type="submit">Update List</Button>
       </div>
     </div>

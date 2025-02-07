@@ -186,19 +186,4 @@
     font-size: 14px;
   }
 
-  .toggle-preview {
-    cursor: pointer;
-    font-size: 14px;
-    padding: 6px;
-    border: none;
-    background: #007bff;
-    color: white;
-    border-radius: 4px;
-    margin: 8px;
-  }
-
-  .toggle-preview:hover {
-    background: #0056b3;
-  }
-
 </style>

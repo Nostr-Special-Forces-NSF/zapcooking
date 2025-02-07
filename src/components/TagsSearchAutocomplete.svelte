@@ -58,9 +58,12 @@
     }, 200);
   }
 
+  let inputElement: HTMLInputElement;
+
   onMount(() => {
     // Initialize filteredTags with all tags on component mount
     filteredTags = recipeTags.slice(0, maxAutocompleteOptions);
+	if (autofocus) inputElement?.focus();
   });
 </script>
 
@@ -75,7 +78,6 @@
     }}
   >
     <div class="flex mx-0.5 items-stretch grow focus-within:z-10">
-      {#if autofocus}
       <input
         bind:value={tagquery}
         on:input={handleInputChange}
@@ -83,18 +85,8 @@
         on:blur={handleInputBlur}
         class="block w-full input"
         placeholder={placeholderString}
-        autofocus
+		bind:this={inputElement}
       />
-      {:else}
-      <input
-        bind:value={tagquery}
-        on:input={handleInputChange}
-        on:focus={handleInputFocus}
-        on:blur={handleInputBlur}
-        class="block w-full input"
-        placeholder={placeholderString}
-      />
-      {/if}
     </div>
     <input type="submit" class="hidden" />
   </form>

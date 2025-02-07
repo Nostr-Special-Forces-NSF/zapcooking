@@ -80,7 +80,7 @@
       bind:value={summary}
       rows="6"
       class="input"
-    />
+    ></textarea>
   </div>
 
   <div>
@@ -92,7 +92,6 @@
   <div class="flex justify-end">
     <div>
       {resultMessage}
-      <button />
       <Button disabled={disablePublishButton} type="submit">Create List</Button>
     </div>
   </div>

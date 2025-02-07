@@ -61,6 +61,6 @@
     class="bg-input border-input focus:ring-primary focus:border-primary rounded-3xl px-8 py-6 transition duration-300"
     rows="6"
     placeholder="This tastes..."
-  />
+  ></textarea>
   <Button on:click={postComment} class="self-end">Post Reply</Button>
 </div>

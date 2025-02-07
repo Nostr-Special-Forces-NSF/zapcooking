@@ -3,7 +3,7 @@
   import type { NDKEvent } from '@nostr-dev-kit/ndk';
   import { nip19 } from 'nostr-tools';
   import { onMount } from 'svelte';
-  import { get, writable, type Writable } from 'svelte/store';
+  import { type Writable } from 'svelte/store';
 
   export let event: NDKEvent;
   export let list = false;
@@ -73,10 +73,10 @@
     data-sveltekit-preload
     class="flex flex-col gap-4"
   >
-    <div class="image relative" style={`background-image: url('/placeholder.png');`}>
+    <div class="recipe-card-image image relative" style={`background-image: url('/placeholder.png');`}>
       <div
         bind:this={imageElement}
-        class="image absolute top-0 right-0 bottom-0 left-0 transition-transform duration-700 ease-in-out hover:scale-105"
+        class="recipe-card-image image absolute top-0 right-0 bottom-0 left-0 transition-transform duration-700 ease-in-out hover:scale-105"
       ></div>
     </div>
 
@@ -91,9 +91,4 @@
 </div>
 
 <style>
-  @reference "../app.css";
-
-  .image {
-    @apply relative aspect-auto h-[237px] w-[160px] cursor-pointer overflow-hidden rounded-2xl bg-cover bg-center object-cover before:animate-pulse;
-  }
 </style>
