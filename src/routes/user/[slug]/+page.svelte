@@ -12,7 +12,6 @@
   import Button from '../../../components/Button.svelte';
   import LightningIcon from 'phosphor-svelte/lib/Lightning';
   import QrIcon from 'phosphor-svelte/lib/QrCode';
-  import { requestProvider } from 'webln';
   import ProfileLists from '../../../components/ProfileLists.svelte';
   import Modal from '../../../components/Modal.svelte';
   // @ts-expect-error ehm svelte-qrcode doesn't have type support or something?

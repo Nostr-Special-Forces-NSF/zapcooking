@@ -10,7 +10,6 @@
   import ImagesComboBox from './ImagesComboBox.svelte';
   import Button from './Button.svelte';
   import { onMount } from 'svelte';
-  import StringComboBox from './StringComboBox.svelte';
   import TupleComboBox from './TupleComboBox.svelte';
   import RecipeComboBox from './RecipeComboBox.svelte';
   import MarkdownEditor from './MarkdownEditor.svelte';

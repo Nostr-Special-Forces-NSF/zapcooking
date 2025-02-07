@@ -7,7 +7,6 @@
   import { writable, type Writable } from 'svelte/store';
   import ListComboBox from '../../../components/ListComboBox.svelte';
   import Button from '../../../components/Button.svelte';
-  import ImagesComboBox from '../../../components/ImagesComboBox.svelte';
 
   let title = '';
   let image = '';

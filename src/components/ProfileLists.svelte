@@ -1,10 +1,7 @@
 <script lang="ts">
   import { page } from '$app/stores';
-  import { ndk, userPublickey } from '$lib/nostr';
-  import type { NDKEvent, NDKFilter, NDKUser, NDKUserProfile } from '@nostr-dev-kit/ndk';
-  import { nip19 } from 'nostr-tools';
-  import { goto } from '$app/navigation';
-  import { formatDate } from '$lib/utils';
+  import { ndk } from '$lib/nostr';
+  import type { NDKEvent, NDKFilter, NDKUserProfile } from '@nostr-dev-kit/ndk';
   import Feed from './Feed.svelte';
 
   export let hexpubkey: string | undefined = undefined;

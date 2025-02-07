@@ -1,7 +1,7 @@
 <script lang="ts">
   import type { Writable } from 'svelte/store';
   import ImageUploader from './ImageUploader.svelte';
-    import StringComboBox from './StringComboBox.svelte';
+  import StringComboBox from './StringComboBox.svelte';
 
   export let uploadedImages: Writable<string[]>;
   // 0 is unlimited, and anything above that has a hard limit.
@@ -33,15 +33,15 @@
     <div class="mt-1">
       <ImageUploader setUrl={(a) => addImage(a) && (refresh = {})} />
     </div>
-	<div class="flex flex-col gap-4 mt-4">
-		<StringComboBox placeholder="Or input an existing URL" selected={uploadedImages} />
-	</div>
+    <div class="mt-4 flex flex-col gap-4">
+      <StringComboBox placeholder="Or input an existing URL" selected={uploadedImages} />
+    </div>
   </div>
 {/key}
 
 <div class="mb-2">
   {#if $uploadedImages.length > 0}
-    <ul class="bg-white border border-gray-300 rounded-lg mt-1">
+    <ul class="mt-1 rounded-lg border border-gray-300 bg-white">
       {#each $uploadedImages as image, index}
         <li class="flex items-center justify-between p-2 hover:bg-gray-100">
           <div class="flex items-center">
@@ -49,7 +49,7 @@
           </div>
           <button
             type="button"
-            class="ml-2 px-3 py-[0.05rem] bg-red-500 hover:bg-red-600 text-white rounded-sm"
+            class="ml-2 rounded-sm bg-red-500 px-3 py-[0.05rem] text-white hover:bg-red-600"
             on:click={() => removeImage(index)}
           >
             X

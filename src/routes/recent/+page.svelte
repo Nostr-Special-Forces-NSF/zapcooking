@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { ndk, userPublickey } from '$lib/nostr';
+  import { ndk } from '$lib/nostr';
   import type { NDKEvent, NDKFilter } from '@nostr-dev-kit/ndk';
   import { onMount } from 'svelte';
   import Feed from '../../components/Feed.svelte';

@@ -1,7 +1,6 @@
 <script lang="ts">
   import { ndk, userPublickey } from '$lib/nostr';
   import type { NDKEvent } from '@nostr-dev-kit/ndk';
-  import { onMount } from 'svelte';
   import { decode } from '@gandlaf21/bolt11-decode';
   import { formatAmount } from '$lib/utils';
   import LightningIcon from 'phosphor-svelte/lib/Lightning';

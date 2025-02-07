@@ -1,7 +1,6 @@
 <script lang="ts">
   import { ndk } from '$lib/nostr';
   import { NDKEvent } from '@nostr-dev-kit/ndk';
-  import { onMount } from 'svelte';
   import Button from './Button.svelte';
   import Comment from './Comment.svelte';
 
