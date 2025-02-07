@@ -3,14 +3,13 @@
   import type { NDKEvent } from '@nostr-dev-kit/ndk';
   import { nip19 } from 'nostr-tools';
   import { onMount } from 'svelte';
-  import { get, writable } from 'svelte/store';
+  import { get, writable, type Writable } from 'svelte/store';
 
   export let event: NDKEvent;
   export let list = false;
   export let selectable = false; // Enables the selection checkbox
-  export let selectedRecipes = writable(new Set()); // The store from the parent
-  export let selected = writable(false); // Track if selected
-  export let group: any; // Change 'any' to appropriate type if known
+  export let selected = false; // Track if selected
+  export let selectedRecipes: Writable<Set<string>>;
 
   let link = '';
   $: {
@@ -25,8 +24,6 @@
         link = `/${list ? 'list' : 'recipe'}/${naddr}`;
       }
     }
-
-    selected.set(get(selectedRecipes).has(event.id));
   }
 
   // Image Lazy Loading
@@ -49,18 +46,10 @@
 
   function toggleSelection(e: { stopPropagation: () => void }) {
     e.stopPropagation(); // Prevents navigation when clicking the checkbox
-    selected.update((s) => {
-      selectedRecipes.update((selectedSet) => {
-        let newSet = new Set(selectedSet);
-        if (s) {
-          newSet.delete(event.id); // Deselect
-        } else {
-          newSet.add(event.id); // Select
-        }
-        return newSet;
-      });
-      return !s;
-    });
+    selected = !selected;
+	if (selected) {
+		selectedRecipes.update((s) => s.add(event.id));
+	}
   }
 </script>
 
@@ -71,10 +60,10 @@
   {#if selectable}
     <input
       type="checkbox"
-      bind:checked={$selected}
+      bind:checked={selected}
       on:click={toggleSelection}
-	  class="absolute top-2 left-2 w-5 h-5 z-10 bg-white border-2 border-gray-300 rounded accent-primary"
-	  />
+      class="accent-primary absolute top-2 left-2 z-10 h-5 w-5 rounded border-2 border-gray-300 bg-white"
+    />
   {/if}
 
   <!-- Clickable Recipe Card -->
