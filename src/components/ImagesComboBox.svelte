@@ -1,6 +1,7 @@
 <script lang="ts">
   import type { Writable } from 'svelte/store';
   import ImageUploader from './ImageUploader.svelte';
+    import StringComboBox from './StringComboBox.svelte';
 
   export let uploadedImages: Writable<string[]>;
   // 0 is unlimited, and anything above that has a hard limit.
@@ -33,7 +34,7 @@
       <ImageUploader setUrl={(a) => addImage(a) && (refresh = {})} />
     </div>
 	<div class="flex flex-col gap-4 mt-4">
-		<input class="input" placeholder="Or input an existing URL" on:input="{(a)=> addImage((a.currentTarget.value))}"/>
+		<StringComboBox placeholder="Or input an existing URL" selected={uploadedImages} />
 	</div>
   </div>
 {/key}

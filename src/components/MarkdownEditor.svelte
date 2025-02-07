@@ -92,16 +92,15 @@
     <button on:click={() => insertText('\n## Directions\n1. Step 1\n2. Step 2\n')}
       >📖 Directions</button
     >
-    <button on:click={() => formatText('# ', false)}>H1</button>
-    <button on:click={() => formatText('## ', false)}>H2</button>
-    <button on:click={() => formatText('**')}>B</button>
-    <button on:click={() => formatText('*')}>I</button>
-    <button on:click={() => formatText('> ', false)}>Quote</button>
-    <button on:click={() => formatText('- ', false)}>List</button>
-    <button on:click={() => openModal('link')}>🔗 Link</button>
-    <button on:click={() => openModal('image')}>🖼 Image</button>
-
-	<button on:click={() => (preview = !preview)}>{preview ? '📄 Edit Markdown' : '🖥️ Preview'}</button>
+    <button type="button" on:click={() => formatText('# ', false)}>H1</button>
+    <button type="button" on:click={() => formatText('## ', false)}>H2</button>
+    <button type="button" on:click={() => formatText('**')}>B</button>
+    <button type="button" on:click={() => formatText('*')}>I</button>
+    <button type="button" on:click={() => formatText('> ', false)}>Quote</button>
+    <button type="button" on:click={() => formatText('- ', false)}>List</button>
+    <button type="button" on:click={() => openModal('link')}>🔗 Link</button>
+    <button type="button" on:click={() => openModal('image')}>🖼 Image</button>
+	<button type="button" on:click={() => (preview = !preview)}>{preview ? '📄 Edit Markdown' : '🖥️ Preview'}</button>
   </div>
   <!-- Markdown Editor / Preview -->
   {#if preview}
