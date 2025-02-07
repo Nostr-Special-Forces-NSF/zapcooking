@@ -2,7 +2,7 @@
   import { onMount } from 'svelte';
   import { page } from '$app/stores';
   import { ndk } from '$lib/nostr';
-  import type { NDKEvent } from '@nostr-dev-kit/ndk';
+  import type { NDKEvent, NDKKind } from '@nostr-dev-kit/ndk';
   import { nip19 } from 'nostr-tools';
   import { goto } from '$app/navigation';
   import Recipe from '../../../components/Recipe/Recipe.svelte';
@@ -34,7 +34,7 @@
         event = await $ndk.fetchEvent({
           '#d': [b.identifier],
           authors: [b.pubkey],
-          kinds: [35000]
+          kinds: [35000, 30023] as NDKKind[],
         });
       } else {
         event = await $ndk.fetchEvent($page.params.slug);

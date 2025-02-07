@@ -1,9 +1,12 @@
 <script lang="ts">
   import type { NDKEvent } from '@nostr-dev-kit/ndk';
   import RecipeCard from './RecipeCard.svelte';
+  import { writable } from 'svelte/store';
 
   export let events: NDKEvent[];
   export let lists = false;
+  export let selectable = false;
+  export let selectedRecipes = writable();
 </script>
 
 <svelte:head>
@@ -15,7 +18,7 @@
 >
   {#if events.length > 0}
     {#each events as event}
-      <RecipeCard list={lists} {event} />
+      <RecipeCard list={lists} {event} {selectable} bind:group={selectedRecipes} />
     {/each}
   {:else}
     {#each new Array(24) as i}
