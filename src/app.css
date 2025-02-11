@@ -33,18 +33,6 @@
   ::file-selector-button {
     border-color: var(--color-gray-200, currentColor);
   }
-
-  ul {
-    @apply list-disc pl-5;
-  }
-
-  ol {
-    @apply list-decimal pl-5;
-  }
-
-  li {
-    @apply mb-2;
-  }
 }
 
 @layer utilities {

@@ -42,7 +42,7 @@
             {tag.title}
           </span>
           <div class="flex gap-2">
-            <button class="self-center text-danger" on:click={() => removeTag(index)}>
+            <button type="button" class="self-center text-danger" on:click={() => removeTag(index)}>
               <TrashIcon />
             </button>
           </div>

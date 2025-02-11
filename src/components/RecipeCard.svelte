@@ -19,7 +19,7 @@
         const naddr = nip19.naddrEncode({
           identifier: d,
           kind: event.kind as number,
-          pubkey: event.author.pubkey ?? userPublickey
+          pubkey: event.author.pubkey,
         });
         link = `/${list ? 'list' : 'recipe'}/${naddr}`;
       }
@@ -84,7 +84,7 @@
       {#if event?.tags.find((e) => e[0] == 'title')?.[0] && event?.tags.find((e) => e[0] == 'title')?.[1]}
         {event.tags.find((e) => e[0] == 'title')?.[1]}
       {:else}
-        {event.tags.find((e) => e[0] == 'd')?.[1]}
+        {event.tags.find((e) => e[0] == 'name')?.[1]}
       {/if}
     </h5>
   </a>

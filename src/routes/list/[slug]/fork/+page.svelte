@@ -130,7 +130,7 @@
         nevent.tags.push(['summary', summary]);
       }
       if ($images.length === 1) {
-        event.tags.push(['image', $images[0]]);
+        nevent.tags.push(['image', $images[0]]);
       }
       $items.forEach((e) => {
         const data = nip19.decode(e.naddr).data;

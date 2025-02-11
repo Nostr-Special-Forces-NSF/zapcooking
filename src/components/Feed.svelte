@@ -6,7 +6,7 @@
   export let events: NDKEvent[];
   export let lists = false;
   export let selectable = false;
-  export let selectedRecipes = writable(new Set<string>()) ;
+  export let selectedRecipes = writable(new Set<string>());
 </script>
 
 <svelte:head>

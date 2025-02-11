@@ -20,8 +20,7 @@
   import { fade } from 'svelte/transition';
   import Feed from '../Feed.svelte';
   import { CopySimple } from 'phosphor-svelte';
-  import { marked } from 'marked';
-  import DOMPurify from 'dompurify';
+  import { parseMarkdown } from '$lib/marked';
 
   export let event: NDKEvent;
   export let embeddedRecipes: NDKEvent[];
@@ -37,6 +36,7 @@
   let zapModal = false;
   let bookmarkModal = false;
   let dropdownActive = false;
+  let recipeContent = '';
 
   let listsArr: NDKEvent[] = [];
   async function getLists(): Promise<NDKEvent[]> {
@@ -59,10 +59,6 @@
       return a.replaceableDTag().localeCompare(b.replaceableDTag());
     });
     return listsArr;
-  }
-
-  function parseMarkdown(content: string): string {
-    return DOMPurify.sanitize(marked(content));
   }
 
   // If a list's d id is found here, then modifyLists will make the inverse change to what's there currently.
@@ -123,9 +119,13 @@
     else toggleLists.add(id);
   }
 
-  /*const firstTag = recipeTags.find(
-    (e) => e.title.toLowerCase().replaceAll(' ', '-') == event.getMatchingTags("t").filter((t) => t[1].slice(13)[0])[0][1].slice(13)
-  );*/
+  $: if (event.content) {
+    (async () => {
+      console.log(event.content);
+      recipeContent = await parseMarkdown(event.content);
+	  console.log(recipeContent);
+    })();
+  }
 </script>
 
 <ZapModal bind:open={zapModal} {event} />
@@ -249,13 +249,13 @@
       </div>
       <div class="prose">
         {#if $translateOption.lang}
-          {#await translate($translateOption, parseMarkdown(event.content))}
+          {#await translate($translateOption, recipeContent)}
             ...
           {:then result}
             <!-- TODO: clean this up -->
             {#if result !== ''}
               {#if result.from.language.iso === $translateOption.lang}
-                {@html parseMarkdown(event.content)}
+                {@html recipeContent}
               {:else}
                 <hr />
                 <p class="font-medium">
@@ -309,10 +309,10 @@
           {#if embeddedRecipes.length > 0}
             {#each embeddedRecipes as embeddedRecipe}
               <h3>{embeddedRecipe.tagValue('title')}</h3>
-              {@html parseMarkdown(embeddedRecipe.content)}
+              {@html recipeContent}
             {/each}
           {/if}
-          {@html parseMarkdown(event.content)}
+          {@html recipeContent}
         {/if}
       </div>
       {#if embeddedRecipes.length > 0}

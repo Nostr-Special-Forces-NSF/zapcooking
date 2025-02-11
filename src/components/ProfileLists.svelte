@@ -28,7 +28,6 @@
         authors: [hexpubkey],
         limit: 256,
         kinds: [30003],
-        '#t': ['nostrcooking']
       };
       const evts = await $ndk.fetchEvents(filter);
       let evtsArr = Array.from(evts);

@@ -4,88 +4,139 @@
   import TrashIcon from 'phosphor-svelte/lib/Trash';
   import { slide } from 'svelte/transition';
 
-  let inputNewThing: string = '';
   export let selected: Writable<string[]>;
   export let placeholder: string;
   export let showIndex: boolean = false;
 
-  function removeTag(index: number) {
-    let nSelected = $selected;
-    if (index < 0 || index >= nSelected.length) {
-      return; // Index out of bounds
-    }
+  let inputNewThing: string = '';
+  let editingIndex: number | null = null;
 
-    nSelected = [...nSelected.slice(0, index), ...nSelected.slice(index + 1)];
-    selected.set(nSelected);
+  function removeTag(index: number) {
+    selected.update((items) => items.filter((_, i) => i !== index));
   }
 
   function addTag() {
-    let nSelected = $selected;
-    if (inputNewThing) {
-      let tag = inputNewThing;
+    if (inputNewThing.trim()) {
+      selected.update((items) => [...items, inputNewThing.trim()]);
       inputNewThing = '';
-      nSelected.push(tag);
-      selected.set(nSelected);
     }
   }
 
   function moveTagUp(index: number) {
-    let nSelected = $selected;
-    if (index > 0) {
-      const temp = nSelected[index];
-      nSelected[index] = nSelected[index - 1];
-      nSelected[index - 1] = temp;
-      selected.set(nSelected);
-    }
+    selected.update((items) => {
+      if (index > 0) {
+        const updatedItems = [...items];
+        [updatedItems[index], updatedItems[index - 1]] = [
+          updatedItems[index - 1],
+          updatedItems[index]
+        ];
+        return updatedItems;
+      }
+      return items;
+    });
   }
 
   function moveTagDown(index: number) {
-    let nSelected = $selected;
-    if (index < nSelected.length - 1) {
-      const temp = nSelected[index];
-      nSelected[index] = nSelected[index + 1];
-      nSelected[index + 1] = temp;
-      selected.set(nSelected);
+    selected.update((items) => {
+      if (index < items.length - 1) {
+        const updatedItems = [...items];
+        [updatedItems[index], updatedItems[index + 1]] = [
+          updatedItems[index + 1],
+          updatedItems[index]
+        ];
+        return updatedItems;
+      }
+      return items;
+    });
+  }
+
+  function startEditing(index: number) {
+    const item = $selected[index];
+    editingIndex = index;
+  }
+
+  function saveEditing() {
+    if (editingIndex !== null) {
+      editingIndex = null;
+      inputNewThing = '';
+    }
+  }
+
+  function cancelEditing() {
+    editingIndex = null;
+    inputNewThing = '';
+  }
+
+  function adjustHeight(event: Event) {
+    const el = event.target as HTMLTextAreaElement | null;
+    if (el) {
+      el.style.height = 'auto';
+      el.style.height = `${el.scrollHeight}px`;
     }
   }
 </script>
 
-<div class="mb-0">
+<div class="mb-0 flex flex-col gap-2">
   {#if $selected.length > 0}
     <ul class="flex flex-col gap-2">
       {#each $selected as tag, index}
-        <li class="flex input" transition:slide|global={{ duration: 300 }}>
-          <span class="grow">{tag}</span>
-          <div class="flex gap-2">
-            {#if showIndex && index > 0}
-              <button
-                type="button"
-                class="px-2 py-[0.05rem] rounded-sm"
-                on:click={() => moveTagUp(index)}
+        <li class="input" transition:slide|global={{ duration: 300 }}>
+          {#if editingIndex === index}
+            <div class="flex items-start gap-2">
+              <div class="flex-1">
+                <textarea
+                  class="input h-auto w-full"
+                  bind:value={tag}
+                  {placeholder}
+                  on:input={adjustHeight}
+                  style="min-height: 40px;"
+                ></textarea>
+              </div>
+              <div class="flex gap-2">
+                <Button class="shrink-0" on:click={saveEditing}>Save</Button>
+                <Button class="shrink-0" on:click={cancelEditing}>Cancel</Button>
+              </div>
+            </div>
+          {:else}
+            <div class="flex gap-2">
+              <span class="grow" on:dblclick={() => startEditing(index)} role="button" tabindex="-1"
+                >{tag}</span
               >
-                ↑
-              </button>
-            {/if}
-            {#if showIndex && index < $selected.length - 1}
-              <button
-                type="button"
-                class="px-2 py-[0.05rem] rounded-sm"
-                on:click={() => moveTagDown(index)}
-              >
-                ↓
-              </button>
-            {/if}
-            <button class="self-center text-danger" on:click={() => removeTag(index)}>
-              <TrashIcon />
-            </button>
-          </div>
+              <div class="flex gap-2">
+                {#if showIndex && index > 0}
+                  <button
+                    type="button"
+                    class="rounded-sm px-2 py-[0.05rem]"
+                    on:click={() => moveTagUp(index)}
+                  >
+                    ↑
+                  </button>
+                {/if}
+                {#if showIndex && index < $selected.length - 1}
+                  <button
+                    type="button"
+                    class="rounded-sm px-2 py-[0.05rem]"
+                    on:click={() => moveTagDown(index)}
+                  >
+                    ↓
+                  </button>
+                {/if}
+                <button
+                  type="button"
+                  class="text-danger self-center"
+                  on:click={() => removeTag(index)}
+                >
+                  <TrashIcon />
+                </button>
+              </div>
+            </div>
+          {/if}
         </li>
       {/each}
     </ul>
   {/if}
+  <div class="flex gap-2">
+    <input bind:value={inputNewThing} class="input grow" {placeholder} />
+    <Button on:click={addTag} primary={false}>Add</Button>
+  </div>
 </div>
-
-<form on:submit|preventDefault={addTag} class="flex gap-2">
-  <input bind:value={inputNewThing} class="input grow" {placeholder} />
-  <Button on:click={addTag} primary={false}>Add</Button>
-</form>

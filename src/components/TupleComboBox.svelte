@@ -112,7 +112,7 @@
                   ↓
                 </button>
               {/if}
-              <button class="self-center text-danger" on:click={() => removeItem(index)}>
+              <button type="button" class="self-center text-danger" on:click={() => removeItem(index)}>
                 <TrashIcon />
               </button>
             </div>
