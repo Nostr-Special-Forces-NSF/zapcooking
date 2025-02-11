@@ -12,9 +12,9 @@
   import { onMount } from 'svelte';
   import TupleComboBox from './TupleComboBox.svelte';
   import RecipeComboBox from './RecipeComboBox.svelte';
-  import MarkdownEditor from './MarkdownEditor.svelte';
   import { nip19 } from 'nostr-tools';
   import StringComboBox from './StringComboBox.svelte';
+  import NutritionEditor from './NutritionEditor.svelte';
 
   export let recipeData: NDKEvent | null = null;
   export let naddr: string | null = null;
@@ -43,6 +43,7 @@
   let disablePublishButton = false;
   let resultMessage = '';
   let previewEvent: NDKEvent | undefined = undefined;
+  let nutritionValues: Writable<Record<string, string>> = writable({});
 
   function addTag(query: string) {
     let tag = recipeTags.find(
@@ -119,6 +120,10 @@
               selectedRecipesArray.set($selectedRecipesArray);
             }
           }
+          if (e[0] === 'nutrition')
+            nutritionValues.update((v) => {
+              return { ...v, [e[1]]: e[2] };
+            });
         });
       }
     }
@@ -141,7 +146,7 @@
       $ingredientsArray.forEach(([amount, ingredient]) =>
         previewEvent?.tags.push(['ingredient', ingredient, amount])
       );
-	  previewEvent.author.pubkey = $userPublickey;
+      previewEvent.author.pubkey = $userPublickey;
       $selectedTags.forEach((t) => previewEvent?.tags.push(['t', t.title.toLowerCase()]));
     }
   }
@@ -168,7 +173,7 @@
         }
         if (summary !== '') {
           event.tags.push(['summary', summary]);
-          event.tags.push(['alt', summary]);
+          event.tags.push(['alt', `recipe:${title}`]);
         }
         if ($images.length > 0) {
           for (let i = 0; i < $images.length; i++) {
@@ -183,6 +188,16 @@
             event.tags.push(['t', `${t.title.toLowerCase()}`]);
           }
         });
+        for (const key in $nutritionValues) {
+          event.tags.push(['nutrition', key, $nutritionValues[key]]);
+        }
+		/*
+		event.tags.push([
+          'client',
+          `35000:cooking.nostrsf.org:${title.toLowerCase().replaceAll(' ', '-')}`,
+          'wss://relay.nostrsf.org'
+        ]);
+		*/
         console.log('event to publish:', event);
         let relays = await event.publish();
         resultMessage = 'Succes!';
@@ -261,6 +276,11 @@
       <span class="font-bold">Servings (persons)</span>
       <input placeholder="4" bind:value={servings} class="input" />
     </div>
+  </div>
+
+  <div class="flex flex-col gap-2">
+    <h3>Nutrition</h3>
+    <NutritionEditor {nutritionValues} />
   </div>
 
   <div class="flex flex-col gap-2">

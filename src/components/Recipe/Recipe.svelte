@@ -119,11 +119,36 @@
     else toggleLists.add(id);
   }
 
+  const emojiMap: Record<string, string> = {
+    calories: '🔥',
+    carbohydrate: '🍞',
+    protein: '🍗',
+    fat: '🥑',
+    saturated: '🧈',
+    sodium: '🧂',
+    fiber: '🌾',
+    sugar: '🍭',
+    serving: '🍽️'
+  };
+
+  function normalizeCase(input: string): string {
+    const normalized = input
+        .replace(/([a-z])([A-Z])/g, '$1 $2')  // camelCase to spaced words
+        .replace(/_/g, ' ')                   // snake_case to spaced words
+        .replace(/\b\w/g, (char) => char.toUpperCase()); // Capitalize words
+
+    const firstWord = normalized.split(' ')[0].toLowerCase();
+
+    const emoji = emojiMap[firstWord] || '';
+
+    return `${emoji} ${normalized}`.trim();
+  }
+
   $: if (event.content) {
     (async () => {
       console.log(event.content);
       recipeContent = await parseMarkdown(event.content);
-	  console.log(recipeContent);
+      console.log(recipeContent);
     })();
   }
 </script>
@@ -289,6 +314,22 @@
             <li>🍳 Cook time: {cookTime} minutes</li>
             <li>🍽️ Servings: {event.tagValue('servings')}</li>
           </ul>
+          {#if event.hasTag('nutrition')}
+            <h2>Nutrition</h2>
+            <ul>
+              {#each event.tags.filter((t) => t[0] === 'nutrition') as ninfo}
+                <li>{normalizeCase(ninfo[1])}: {ninfo[2]}</li>
+              {/each}
+            </ul>
+          {/if}
+          {#if event.hasTag('tool')}
+            <h2>Tools</h2>
+            <ul>
+              {#each event.tags.filter((t) => t[0] === 'tool') as ninfo}
+                <li>{ninfo[1]}</li>
+              {/each}
+            </ul>
+          {/if}
           <h2>Ingredients</h2>
           {#if embeddedRecipes.length > 0}
             {#each embeddedRecipes as embeddedRecipe}

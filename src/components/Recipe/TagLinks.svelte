@@ -9,7 +9,7 @@
   let tags: recipeTagSimple[] = [];
 
   tags = event.tags
-    .filter((t) => t[0] === 'category' || t[0] === 'cuisine')
+    .filter((t) => t[0] === 'category' || t[0] === 'cuisine' || t[0] === 'dietary_restrictions')
     .map<recipeTagSimple>((t) => {
       return {
         title: t[1].toLowerCase()
