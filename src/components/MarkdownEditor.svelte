@@ -1,189 +1,254 @@
 <script lang="ts">
-  import { marked } from 'marked';
-  import DOMPurify from 'dompurify';
-  import Modal from './Modal.svelte';
+  import { get, writable, type Writable } from 'svelte/store';
   import Button from './Button.svelte';
+  import TrashIcon from 'phosphor-svelte/lib/Trash';
+  import { slide } from 'svelte/transition';
+  import { parseMarkdown } from '$lib/marked';
 
-  export let content = ''; // Markdown content
-  export let placeholder = 'Write your recipe here...';
-  let preview = false; // Toggle preview mode
-  let textareaId = `editor-${Math.random().toString(36).substr(2, 9)}`; // Unique textarea ID
-  let modalType = ''; // "link" or "image"
-  let inputText = '';
-  let inputAltText = '';
-  let open = false;
+  // The store is an array of strings, each representing one line of Markdown
+  export let markdownLines: Writable<string[]>;
 
-  // Find the specific textarea by ID
-  function getTextarea(): HTMLTextAreaElement | null {
-    return document.getElementById(textareaId) as HTMLTextAreaElement;
-  }
+  // A list of transformations to apply to new lines
+  const markdownOptions = [
+    // HEADINGS
+    {
+      label: 'Heading 1',
+      emoji: '🔠',
+      transform: (text: string) => `# ${text}`
+    },
+    {
+      label: 'Heading 2',
+      emoji: '🔡',
+      transform: (text: string) => `## ${text}`
+    },
+    {
+      label: 'Heading 3',
+      emoji: '🔤',
+      transform: (text: string) => `### ${text}`
+    },
 
-  // Open modal for link or image input
-  function openModal(type: 'link' | 'image') {
-    modalType = type;
-    inputText = '';
-    inputAltText = '';
-    open = true;
-  }
+    // TEXT STYLES
+    {
+      label: 'Bold',
+      emoji: '💪',
+      transform: (text: string) => `**${text}**`
+    },
+    {
+      label: 'Italic',
+      emoji: '🎨',
+      transform: (text: string) => `_${text}_`
+    },
+    {
+      label: 'Strikethrough',
+      emoji: '❌',
+      transform: (text: string) => `~~${text}~~`
+    },
 
-  // Format text with Markdown syntax
-  function formatText(tag: string, wrap: boolean = true) {
-    const textarea = getTextarea();
-    if (!textarea) return;
+    // QUOTES / CODE
+    {
+      label: 'Blockquote',
+      emoji: '💬',
+      transform: (text: string) => `> ${text}`
+    },
+    {
+      label: 'Inline Code',
+      emoji: '⚙️',
+      transform: (text: string) => `\`${text}\``
+    },
+    {
+      label: 'Code Fence',
+      emoji: '💻',
+      transform: (text: string) => '```\n' + text + '\n```'
+      // or "```js\n" + text + "\n```" if you want a default language
+    },
 
-    const { selectionStart, selectionEnd } = textarea;
-    const before = content.substring(0, selectionStart);
-    const selected = content.substring(selectionStart, selectionEnd);
-    const after = content.substring(selectionEnd);
+    // LISTS
+    {
+      label: 'Ordered List',
+      emoji: '🔢',
+      transform: (text: string) => `1. ${text}`
+    },
+    {
+      label: 'Unordered List',
+      emoji: '•',
+      transform: (text: string) => `- ${text}`
+    },
+    {
+      label: 'Task List',
+      emoji: '☑️',
+      transform: (text: string) => `- [ ] ${text}`
+    },
 
-    // Format based on wrap mode
-    if (wrap) {
-      content = `${before}${tag}${selected}${tag}${after}`;
-    } else {
-      content = `${before}${tag} ${selected}${after}`;
+    // LINK / IMAGE
+    {
+      label: 'Link',
+      emoji: '🔗',
+      transform: (url: string) => `[Link Title](${url})`
+    },
+    {
+      label: 'Image (URL)',
+      emoji: '🖼️',
+      transform: (url: string) => `![Image](${url})`
+    },
+
+    // MISC
+    {
+      label: 'Horizontal Rule',
+      emoji: '➖',
+      transform: () => `---`
+    },
+    {
+      label: 'Table',
+      emoji: '📊',
+      transform: (placeholder: string) =>
+        `| Column1 | Column2 |\n|---------|---------|\n| ${placeholder} | ${placeholder} |`
     }
+  ];
 
-    textarea.focus();
+  // For adding a new line with a transform
+  let selectedOption: string = '';
+  let userInput: string = '';
+
+  // For editing an existing line
+  let editingIndex: number | null = null;
+  let editingValue: string = '';
+  let combinedMarkdown: string;
+
+  // The rendered result for each line
+  let renderedLines: Writable<string[]> = writable([]);
+
+  function isListMarkdown(line: string): boolean {
+    return /^[0-9]+(\.|\))\s/.test(line) || /^[-*+]\s/.test(line);
   }
 
-  // Insert image or link Markdown after modal input
-  function insertMarkdown() {
-    const textarea = getTextarea();
-    if (!textarea || !inputText) return;
+  /**
+   * Re-render all lines whenever `markdownLines` changes
+   */
+   $: if ($markdownLines) {
+    reRenderLines();
+  }
 
-    const { selectionStart, selectionEnd } = textarea;
-    const before = content.substring(0, selectionStart);
-    const after = content.substring(selectionEnd);
-    let markdown = '';
+  // Called whenever lines change or an edit completes
+  async function reRenderLines() {
+    // Wait for each line to be parsed asynchronously
+    const linesArray = $markdownLines;
+	const result:string[] = [];
+	for (let line of linesArray) {
+		let rline = isListMarkdown(line) ? line : await parseMarkdown(line);
+		console.log(rline);
+		result.push(rline);
+	}
+	renderedLines.set(result);
+	combinedMarkdown = get(markdownLines).join('\n');
+	console.log(combinedMarkdown);
+  }
 
-    if (modalType === 'link') {
-      markdown = `[${inputAltText || 'Link'}](${inputText})`;
-    } else if (modalType === 'image') {
-      markdown = `![${inputAltText || 'Image'}](${inputText})`;
+  /**
+   * Apply the chosen transformation to userInput, then add
+   * a new line to the array. (If no transform or input is chosen, do nothing.)
+   */
+  function addLine() {
+    if (!selectedOption || !userInput.trim()) return;
+    const option = markdownOptions.find((o) => o.label === selectedOption);
+    if (!option) return;
+    const transformed = option.transform(userInput.trim());
+    markdownLines.update((lines) => [...lines, transformed]);
+    console.log(transformed);
+    // Reset
+    selectedOption = '';
+    userInput = '';
+  }
+
+  /**
+   * Start editing an existing line
+   */
+  function startEditing(index: number) {
+    console.log(index);
+    editingIndex = index;
+    editingValue = get(markdownLines)[index] || '';
+  }
+
+  /**
+   * Save the edited line
+   */
+  function saveEditing() {
+    if (editingIndex !== null) {
+      markdownLines.update((lines) => {
+        const updated = [...lines];
+        updated[editingIndex] = editingValue;
+        return updated;
+      });
     }
-
-    content = `${before}${markdown}${after}`;
-    open = false;
-    textarea.focus();
+    editingIndex = null;
+    editingValue = '';
   }
 
-  // Insert links, images, or recipe sections
-  function insertText(template: string) {
-    const textarea = getTextarea();
-    if (!textarea) return;
-
-    const { selectionStart, selectionEnd } = textarea;
-    const before = content.substring(0, selectionStart);
-    const after = content.substring(selectionEnd);
-
-    content = `${before}${template}${after}`;
-    textarea.focus();
+  /**
+   * Cancel editing
+   */
+  function cancelEditing() {
+    editingIndex = null;
+    editingValue = '';
   }
 
-  // Convert Markdown to sanitized HTML for preview mode
-  function getPreview() {
-    return DOMPurify.sanitize(marked(content));
+  /**
+   * Remove an existing line
+   */
+  function removeLine(index: number) {
+    markdownLines.update((lines) => {
+      return lines.filter((_, i) => i !== index);
+    });
   }
 </script>
 
-<div class="editor-container">
-  <!-- Toolbar -->
-  <div class="toolbar">
-    <button on:click={() => insertText('\n## Directions\n1. Step 1\n2. Step 2\n')}
-      >📖 Directions</button
-    >
-    <button type="button" on:click={() => formatText('# ', false)}>H1</button>
-    <button type="button" on:click={() => formatText('## ', false)}>H2</button>
-    <button type="button" on:click={() => formatText('**')}>B</button>
-    <button type="button" on:click={() => formatText('*')}>I</button>
-    <button type="button" on:click={() => formatText('> ', false)}>Quote</button>
-    <button type="button" on:click={() => formatText('- ', false)}>List</button>
-    <button type="button" on:click={() => openModal('link')}>🔗 Link</button>
-    <button type="button" on:click={() => openModal('image')}>🖼 Image</button>
-	<button type="button" on:click={() => (preview = !preview)}>{preview ? '📄 Edit Markdown' : '🖥️ Preview'}</button>
-  </div>
-  <!-- Markdown Editor / Preview -->
-  {#if preview}
-    <div class="preview">{@html getPreview()}</div>
-  {:else}
-    <textarea class="input" id={textareaId} bind:value={content} {placeholder}></textarea>
-  {/if}
-</div>
+<!-- Existing lines (each line is editable) -->
+{#if $markdownLines.length > 0}
+  <ul class="mb-4 flex flex-col gap-2">
+    {#each $markdownLines as line, index}
+      <li class="input flex items-start" transition:slide|global={{ duration: 300 }}>
+        {#if editingIndex === index}
+          <!-- Edit mode for this line -->
+          <div class="flex grow flex-col gap-2">
+            <textarea rows="2" class="input h-auto w-full" bind:value={editingValue}></textarea>
+            <div class="flex gap-2">
+              <Button on:click={saveEditing}>Save</Button>
+              <Button on:click={cancelEditing}>Cancel</Button>
+            </div>
+          </div>
+        {:else}
+          <!-- Display mode for this line -->
+          <div class="flex grow gap-2">
+            <span class="grow" on:dblclick={() => startEditing(index)} role="button" tabindex="-1">
+              {@html $renderedLines[index]}
+            </span>
+          </div>
+          <button type="button" class="text-danger self-center" on:click={() => removeLine(index)}>
+            <TrashIcon />
+          </button>
+        {/if}
+      </li>
+    {/each}
+  </ul>
+{/if}
 
-<Modal bind:open>
-  <h1 slot="title">{modalType === 'link' ? 'Insert Link' : 'Insert Image'}</h1>
-  <div class="flex flex-col gap-3">
-    <div class="flex flex-col gap-3">
-      <input
-        type="text"
-        class="input"
-        bind:value={inputText}
-        placeholder={modalType === 'link' ? 'Enter URL' : 'Enter Image URL'}
-      />
-      <input
-        type="text"
-        class="input"
-        bind:value={inputAltText}
-        placeholder="Enter text (optional)"
-      />
-    </div>
-    <div class="flex justify-end gap-2">
-      <Button
-        class="hover:bg-accent-gray border border-[#ECECEC] bg-white text-black!"
-        on:click={() => (open = false)}>Cancel</Button
-      >
-      <Button on:click={insertMarkdown}>Insert</Button>
-    </div>
-  </div>
-</Modal>
+<!-- Add new line form -->
+<form on:submit|preventDefault={addLine} class="flex flex-col items-end gap-2 md:flex-row">
+  <select class="input w-full md:w-auto" bind:value={selectedOption}>
+    <option value="" disabled selected>Select Markdown Format</option>
+    {#each markdownOptions as option}
+      <option value={option.label}>
+        {option.emoji}
+        {option.label}
+      </option>
+    {/each}
+  </select>
 
-<style>
-  .editor-container {
-    border: 1px solid #ddd;
-    border-radius: 6px;
-    font-family: Arial, sans-serif;
-    width: 100%;
-    max-width: 800px;
-    margin: auto;
-  }
+  <input
+    type="text"
+    class="input w-full md:w-auto"
+    bind:value={userInput}
+    placeholder="Enter text or URL"
+  />
 
-  .toolbar {
-    background: #f6f8fa;
-    padding: 6px;
-    border-bottom: 1px solid #ddd;
-    display: flex;
-    flex-wrap: wrap;
-    gap: 6px;
-  }
-
-  .toolbar button {
-    background: none;
-    border: none;
-    cursor: pointer;
-    padding: 8px;
-    font-size: 14px;
-    font-weight: bold;
-    display: flex;
-    align-items: center;
-  }
-
-  .toolbar button:hover {
-    background: #e1e4e8;
-  }
-
-  textarea {
-    width: 100%;
-    min-height: 250px;
-    border: none;
-    padding: 10px;
-    font-size: 14px;
-    resize: vertical;
-    outline: none;
-  }
-
-  .preview {
-    padding: 10px;
-    font-size: 14px;
-  }
-
-</style>
+  <Button on:click={addLine}>Add Line</Button>
+</form>

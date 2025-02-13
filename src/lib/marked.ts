@@ -4,39 +4,6 @@ import { ndk, userPublickey } from './nostr';
 import { NDKSubscriptionCacheUsage } from '@nostr-dev-kit/ndk';
 import { nip19 } from 'nostr-tools';
 
-// Image file extensions regex
-const imageFileExtensions = /\.(png|jpe?g|gif|webp|svg)$/i;
-
-// URL tokenizer extension for marked
-const urlTokenizer: TokenizerAndRendererExtension = {
-  name: 'link',
-  level: 'inline',
-  start(src: string) {
-    const match = src.match(/https?:\/\//);
-    return match ? match.index : -1;
-  },
-  tokenizer(src: string) {
-    const match = src.match(/(https?:\/\/[^\s)]+)(?=[\s)]|$)/);
-    if (match) {
-      const url = match[1].trim();
-      const isImage = imageFileExtensions.test(url);
-      return {
-        type: 'link',
-        raw: match[0],
-        text: url,
-        href: url,
-        isImage,
-        tokens: []
-      };
-    }
-  },
-  renderer(token: Tokens.Generic) {
-    if (token.isImage) {
-      return `<img src="${token.href}" alt="Image" class="max-w-full h-auto"/>`;
-    }
-    return `<a href="${token.href}" target="_blank" rel="noopener noreferrer">${token.text}</a>`;
-  }
-};
 
 const getPub = async (token: Token) => {
   if (token.type === 'nostr') {
@@ -135,7 +102,7 @@ const nostrTokenizer: TokenizerAndRendererExtension = {
         url = `https://coracle.social/notes/${tagType}${content}`;
         break;
       case 'nprofile':
-        url = `https://coracle.social/people/${tagType}${content}`;
+        url = `/user/${tagType}${content}`;
         break;
       case 'npub':
       case 'naddr':
@@ -183,7 +150,7 @@ const emailTokenizer: TokenizerAndRendererExtension = {
 };
 
 marked.use({
-  extensions: [nostrTokenizer, emailTokenizer, urlTokenizer],
+  extensions: [nostrTokenizer, emailTokenizer],
   async: true,
   walkTokens: getPub,
 });

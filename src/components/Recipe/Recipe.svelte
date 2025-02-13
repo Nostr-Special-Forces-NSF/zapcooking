@@ -21,6 +21,7 @@
   import Feed from '../Feed.svelte';
   import { CopySimple } from 'phosphor-svelte';
   import { parseMarkdown } from '$lib/marked';
+    import ImageCarousel from '../ImageCarousel.svelte';
 
   export let event: NDKEvent;
   export let embeddedRecipes: NDKEvent[];
@@ -218,9 +219,7 @@
         <TagLinks {event} />
         <AuthorProfile pubkey={event.author.pubkey} />
       </div>
-      {#each event.tags.filter((e) => e[0] === 'image') as image, i}
-        <img class="aspect-video rounded-3xl object-cover" src={image[1]} alt="Image {i + 1}" />
-      {/each}
+	  <ImageCarousel images={event.tags.filter((e) => e[0] === 'image').map((i) => i[1])}></ImageCarousel>
       <div class="flex">
         <div class="flex grow gap-6">
           <TotalLikes {event} />

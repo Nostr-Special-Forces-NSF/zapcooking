@@ -3,7 +3,7 @@
   import TagsComboBox from './TagsComboBox.svelte';
   import { ndk, userPublickey } from '$lib/nostr';
   import { NDKEvent, NDKKind } from '@nostr-dev-kit/ndk';
-  import { recipeTags, type recipeTagSimple } from '$lib/consts';
+  import { recipeTags, toolTags, dietaryRestrictions, type recipeTagSimple } from '$lib/consts';
   import FeedItem from './RecipeCard.svelte';
   import { browser } from '$app/environment';
   import { goto } from '$app/navigation';
@@ -13,8 +13,8 @@
   import TupleComboBox from './TupleComboBox.svelte';
   import RecipeComboBox from './RecipeComboBox.svelte';
   import { nip19 } from 'nostr-tools';
-  import StringComboBox from './StringComboBox.svelte';
   import NutritionEditor from './NutritionEditor.svelte';
+  import MarkdownEditor from './MarkdownEditor.svelte';
 
   export let recipeData: NDKEvent | null = null;
   export let naddr: string | null = null;
@@ -39,11 +39,13 @@
   let servings = '';
   let ingredientsArray: Writable<Array<[string, string]>> = writable([]);
   let directionsArray: Writable<string[]> = writable([]);
-  let directions = '';
+  let directions = writable('');
   let disablePublishButton = false;
   let resultMessage = '';
   let previewEvent: NDKEvent | undefined = undefined;
   let nutritionValues: Writable<Record<string, string>> = writable({});
+  let toolValues: Writable<recipeTagSimple[]> = writable([]);
+  let dietValues: Writable<recipeTagSimple[]> = writable([]);
 
   function addTag(query: string) {
     let tag = recipeTags.find(
@@ -54,6 +56,26 @@
     }
     $selectedTags.push(tag);
     selectedTags = selectedTags;
+  }
+
+  function addTool(query: string) {
+    let tag = toolTags.find(
+      (e) => query.toLowerCase().replaceAll(' ', '-') == e.title.toLowerCase().replaceAll(' ', '-')
+    );
+    if (!tag) {
+      tag = { title: query };
+    }
+    toolValues.update((v) => [...v, tag]);
+  }
+
+  function addDiet(query: string) {
+    let tag = dietaryRestrictions.find(
+      (e) => query.toLowerCase().replaceAll(' ', '-') == e.title.toLowerCase().replaceAll(' ', '-')
+    );
+    if (!tag) {
+      tag = { title: query };
+    }
+    dietValues.update((v) => [...v, tag]);
   }
 
   async function loadData(): Promise<NDKEvent | null> {
@@ -82,7 +104,7 @@
     }
     if (event) {
       if (event.content) {
-        directions = event.content;
+        directions.update((e) => event.content);
         directionsArray.set(event?.content.split('\n') ?? []);
         let titleTagValue = event.tags.find((e) => e[0] == 'title')?.[1];
         if (titleTagValue) title = titleTagValue;
@@ -120,10 +142,13 @@
               selectedRecipesArray.set($selectedRecipesArray);
             }
           }
-          if (e[0] === 'nutrition')
+          if (e[0] === 'nutrition') {
             nutritionValues.update((v) => {
               return { ...v, [e[1]]: e[2] };
             });
+          }
+          if (e[0] === 'tool') addTool(e[1]);
+          if (e[0] === 'dietary_restrictions') addDiet(e[1]);
         });
       }
     }
@@ -191,7 +216,9 @@
         for (const key in $nutritionValues) {
           event.tags.push(['nutrition', key, $nutritionValues[key]]);
         }
-		/*
+        $toolValues.forEach((r) => event.tags.push(['tool', r.title]));
+        $dietValues.forEach((d) => event.tags.push(['dietary_restrictions', d.title]));
+        /*
 		event.tags.push([
           'client',
           `35000:cooking.nostrsf.org:${title.toLowerCase().replaceAll(' ', '-')}`,
@@ -244,7 +271,16 @@
 
   <div class="flex flex-col gap-2">
     <h3>Tags*</h3>
-    <TagsComboBox {selectedTags} />
+    <TagsComboBox {selectedTags} tagArray={recipeTags} />
+  </div>
+
+  <div class="flex flex-col gap-2">
+    <h3>Dietary Restrictions</h3>
+    <TagsComboBox
+      selectedTags={dietValues}
+      tagArray={dietaryRestrictions}
+      placeholderString={'Add any dietary restrictions like Keto or Vegan'}
+    />
   </div>
 
   <div class="flex flex-col gap-2">
@@ -294,8 +330,17 @@
   </div>
 
   <div class="flex flex-col gap-2">
+    <h3>Tools</h3>
+    <TagsComboBox
+      selectedTags={toolValues}
+      tagArray={toolTags}
+      placeholderString={'Add any special kitchen tools needed like Oven or Food Processor'}
+    />
+  </div>
+
+  <div class="flex flex-col gap-2">
     <h3>Directions*</h3>
-    <StringComboBox placeholder={'Bake for 30 min'} selected={directionsArray} showIndex={false} />
+    <MarkdownEditor markdownLines={directionsArray} />
   </div>
 
   <div>

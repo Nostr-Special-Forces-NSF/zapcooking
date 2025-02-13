@@ -1,11 +1,13 @@
 <script lang="ts">
-  import { recipeTags, type recipeTagSimple } from '$lib/consts';
+  import { type recipeTagSimple } from '$lib/consts';
   import type { Writable } from 'svelte/store';
   import TagsSearchAutocomplete from './TagsSearchAutocomplete.svelte';
   import TrashIcon from 'phosphor-svelte/lib/Trash';
   import { slide } from 'svelte/transition';
 
   export let selectedTags: Writable<recipeTagSimple[]>;
+  export let placeholderString = "Add a tag like 'italian' or 'steak' or 'glutenfree'";
+  export let tagArray: recipeTagSimple[] = [];
 
   function removeTag(index: number) {
     let nSelected = $selectedTags;
@@ -19,7 +21,7 @@
 
   function addTag(query: string) {
     let nSelected = $selectedTags;
-    let tag = recipeTags.find(
+    let tag = tagArray.find(
       (e) => query.toLowerCase().replaceAll(' ', '-') == e.title.toLowerCase().replaceAll(' ', '-')
     );
     if (!tag) {
@@ -53,6 +55,7 @@
 </div>
 
 <TagsSearchAutocomplete
-  placeholderString={"Add a tag like 'italian' or 'steak' or 'glutenfree'"}
+  placeholderString={placeholderString}
   action={addTag}
+  recipeTags={tagArray}
 />

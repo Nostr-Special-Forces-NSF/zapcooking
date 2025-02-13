@@ -1,12 +1,13 @@
 <script lang="ts">
   import { onMount } from 'svelte';
-  import { recipeTags, type recipeTagSimple } from '$lib/consts';
+  import { type recipeTagSimple } from '$lib/consts';
 
   const maxAutocompleteOptions = 7;
 
   export let placeholderString: string;
   export let autofocus = false;
   export let action: (query: string) => void;
+  export let recipeTags: recipeTagSimple[] = [];
 
   let tagquery = '';
   let filteredTags: recipeTagSimple[] = [];
