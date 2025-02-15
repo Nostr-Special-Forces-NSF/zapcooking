@@ -148,12 +148,11 @@
    * a new line to the array. (If no transform or input is chosen, do nothing.)
    */
   function addLine() {
-    if (!selectedOption || !userInput.trim()) return;
+    if (!userInput.trim()) return;
     const option = markdownOptions.find((o) => o.label === selectedOption);
-    if (!option) return;
-    const transformed = option.transform(userInput.trim());
+    let transformed = userInput.trim();
+	if (option) transformed = option.transform(transformed);
     markdownLines.update((lines) => [...lines, transformed]);
-    console.log(transformed);
     // Reset
     selectedOption = '';
     userInput = '';
@@ -175,7 +174,7 @@
     if (editingIndex !== null) {
       markdownLines.update((lines) => {
         const updated = [...lines];
-        updated[editingIndex] = editingValue;
+        updated[editingIndex as number] = editingValue;
         return updated;
       });
     }
@@ -233,7 +232,7 @@
 
 <!-- Add new line form -->
 <form on:submit|preventDefault={addLine} class="flex flex-col items-end gap-2 md:flex-row">
-  <select class="input w-full md:w-auto" bind:value={selectedOption}>
+  <select class="input md:w-auto" bind:value={selectedOption}>
     <option value="" disabled selected>Select Markdown Format</option>
     {#each markdownOptions as option}
       <option value={option.label}>
@@ -245,7 +244,7 @@
 
   <input
     type="text"
-    class="input w-full md:w-auto"
+    class="input grow"
     bind:value={userInput}
     placeholder="Enter text or URL"
   />

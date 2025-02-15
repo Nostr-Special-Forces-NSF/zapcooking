@@ -38,6 +38,7 @@
   // Fetch recipes on mount
   onMount(() => {
     fetchRecipes();
+	console.log($selectedRecipesArray);
   });
 
   function handleSelection(event: Event) {
@@ -45,7 +46,7 @@
     const selectedId = select.value;
     const selectedText = select.options[select.selectedIndex].text;
     selectedRecipesArray.update((store) => store.set(selectedId, selectedText));
-  }
+}
 
   function removeItem(index: string) {
     selectedRecipesArray.update((store) => (store.delete(index) ? store : store));
@@ -64,7 +65,7 @@
     {:else if $recipes.size > 0}
       <option value="" disabled selected>{placeholder}</option>
       {#each $recipes as recipe (recipe.id)}
-        <option value={recipe.id}
+        <option value={`35000:${$userPublickey}:${recipe.dTag}`}
           >{recipe.tags.find((tag) => tag[0] === 'title')?.[1] || 'Untitled Recipe'}</option
         >
       {/each}
@@ -78,7 +79,7 @@
         <li class="input flex">
           <span class="grow">{item[1]}</span>
           <div class="flex gap-2">
-            <button class="text-danger self-center" on:click={() => removeItem(item[0])}>
+            <button type="button" class="text-danger self-center" on:click={() => removeItem(item[0])}>
               <TrashIcon />
             </button>
           </div>

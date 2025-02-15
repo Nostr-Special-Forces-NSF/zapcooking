@@ -6,6 +6,7 @@
   import { nip19 } from 'nostr-tools';
   import { goto } from '$app/navigation';
   import Recipe from '../../../components/Recipe/Recipe.svelte';
+  import type NDK from '@nostr-dev-kit/ndk';
 
   let event: NDKEvent | null = null;
   let embeddedRecipes: NDKEvent[] = [];
@@ -34,7 +35,7 @@
         event = await $ndk.fetchEvent({
           '#d': [b.identifier],
           authors: [b.pubkey],
-          kinds: [35000, 30023] as NDKKind[],
+          kinds: [35000] as NDKKind[]
         });
       } else {
         event = await $ndk.fetchEvent($page.params.slug);
@@ -66,11 +67,19 @@
         .filter((t) => t[0] === 'a')
         .map((t) => {
           const atags = t[1].split(':');
-          return atags[0] === '35000' ? atags[1] : undefined;
+          return atags[0] === '35000' ? { pubkey: atags[1], d: atags[2] } : undefined;
         });
 
       const results = await Promise.all(
-        addrs.map((a) => (a ? $ndk.fetchEvent(a) : Promise.resolve(undefined)))
+        addrs.map((a) =>
+          a
+            ? $ndk.fetchEvent({
+                '#d': [a.d],
+                authors: [a.pubkey],
+                kinds: [35000] as NDKKind[]
+              })
+            : Promise.resolve(undefined)
+        )
       );
 
       embeddedRecipes = results as NDKEvent[];

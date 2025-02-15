@@ -21,7 +21,7 @@
   import Feed from '../Feed.svelte';
   import { CopySimple } from 'phosphor-svelte';
   import { parseMarkdown } from '$lib/marked';
-    import ImageCarousel from '../ImageCarousel.svelte';
+  import ImageCarousel from '../ImageCarousel.svelte';
 
   export let event: NDKEvent;
   export let embeddedRecipes: NDKEvent[];
@@ -38,6 +38,7 @@
   let bookmarkModal = false;
   let dropdownActive = false;
   let recipeContent = '';
+  let embeddedRecipeContent: string[] = [];
 
   let listsArr: NDKEvent[] = [];
   async function getLists(): Promise<NDKEvent[]> {
@@ -129,14 +130,15 @@
     sodium: '🧂',
     fiber: '🌾',
     sugar: '🍭',
-    serving: '🍽️'
+    serving: '🍽️',
+    cholesterol: '🫀'
   };
 
   function normalizeCase(input: string): string {
     const normalized = input
-        .replace(/([a-z])([A-Z])/g, '$1 $2')  // camelCase to spaced words
-        .replace(/_/g, ' ')                   // snake_case to spaced words
-        .replace(/\b\w/g, (char) => char.toUpperCase()); // Capitalize words
+      .replace(/([a-z])([A-Z])/g, '$1 $2') // camelCase to spaced words
+      .replace(/_/g, ' ') // snake_case to spaced words
+      .replace(/\b\w/g, (char) => char.toUpperCase()); // Capitalize words
 
     const firstWord = normalized.split(' ')[0].toLowerCase();
 
@@ -147,9 +149,10 @@
 
   $: if (event.content) {
     (async () => {
-      console.log(event.content);
+      console.log(event);
       recipeContent = await parseMarkdown(event.content);
-      console.log(recipeContent);
+      const contentPromise = embeddedRecipes.map(async (e) => await parseMarkdown(e.content));
+      embeddedRecipeContent = await Promise.all(contentPromise);
     })();
   }
 </script>
@@ -219,7 +222,8 @@
         <TagLinks {event} />
         <AuthorProfile pubkey={event.author.pubkey} />
       </div>
-	  <ImageCarousel images={event.tags.filter((e) => e[0] === 'image').map((i) => i[1])}></ImageCarousel>
+      <ImageCarousel images={event.tags.filter((e) => e[0] === 'image').map((i) => i[1])}
+      ></ImageCarousel>
       <div class="flex">
         <div class="flex grow gap-6">
           <TotalLikes {event} />
@@ -315,11 +319,21 @@
           </ul>
           {#if event.hasTag('nutrition')}
             <h2>Nutrition</h2>
-            <ul>
-              {#each event.tags.filter((t) => t[0] === 'nutrition') as ninfo}
-                <li>{normalizeCase(ninfo[1])}: {ninfo[2]}</li>
-              {/each}
-            </ul>
+            {#if event.tags.filter((t) => t[0] === 'nutrition').length > 4}
+              <!-- Two-column layout -->
+              <div class="grid grid-cols-2 gap-4">
+                {#each event.tags.filter((t) => t[0] === 'nutrition') as ninfo, index}
+                  <div class="break-inside-avoid">{normalizeCase(ninfo[1])}: {ninfo[2]}</div>
+                {/each}
+              </div>
+            {:else}
+              <!-- Single-column layout -->
+              <ul>
+                {#each event.tags.filter((t) => t[0] === 'nutrition') as ninfo}
+                  <li>{normalizeCase(ninfo[1])}: {ninfo[2]}</li>
+                {/each}
+              </ul>
+            {/if}
           {/if}
           {#if event.hasTag('tool')}
             <h2>Tools</h2>
@@ -347,13 +361,13 @@
           </ul>
           <h2>Directions</h2>
           {#if embeddedRecipes.length > 0}
-            {#each embeddedRecipes as embeddedRecipe}
+            {#each embeddedRecipes as embeddedRecipe, index}
               <h3>{embeddedRecipe.tagValue('title')}</h3>
-              {@html recipeContent}
+              {@html embeddedRecipeContent[index]}
             {/each}
           {/if}
-          {@html recipeContent}
         {/if}
+        {@html recipeContent}
       </div>
       {#if embeddedRecipes.length > 0}
         <div class="flex flex-col gap-2">

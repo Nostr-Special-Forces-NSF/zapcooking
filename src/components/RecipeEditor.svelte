@@ -47,6 +47,14 @@
   let toolValues: Writable<recipeTagSimple[]> = writable([]);
   let dietValues: Writable<recipeTagSimple[]> = writable([]);
 
+  function normalizeCase(input: string): string {
+    return (
+      input
+        .replace(/([a-z])([A-Z])/g, '$1_$2')
+        .toLowerCase()
+    );
+  }
+
   function addTag(query: string) {
     let tag = recipeTags.find(
       (e) => query.toLowerCase().replaceAll(' ', '-') == e.title.toLowerCase().replaceAll(' ', '-')
@@ -137,14 +145,18 @@
           if (e[0] === 'a') {
             const addr = e[1].split(':');
             if (addr[0] === '35000') {
-              const ne = await $ndk.fetchEvent(addr[1]);
-              $selectedRecipesArray.set(addr[1], ne?.tagValue('title')!);
+              const ne = await $ndk.fetchEvent({
+                '#d': [addr[2]],
+                authors: [addr[1]],
+                kinds: [35000] as NDKKind[]
+              });
+              $selectedRecipesArray.set(e[1], ne?.tagValue('title')!);
               selectedRecipesArray.set($selectedRecipesArray);
             }
           }
           if (e[0] === 'nutrition') {
             nutritionValues.update((v) => {
-              return { ...v, [e[1]]: e[2] };
+              return { ...v, [normalizeCase(e[1])]: e[2] };
             });
           }
           if (e[0] === 'tool') addTool(e[1]);
@@ -206,7 +218,7 @@
           }
         }
         $ingredientsArray.forEach(([amount, ingredient]) => {
-          event.tags.push(['ingredient', ingredient, amount]);
+          event.tags.push(['ingredient', ingredient.trim(), amount ? amount.trim() : '']);
         });
         $selectedTags.forEach((t) => {
           if (t.title) {
@@ -218,6 +230,9 @@
         }
         $toolValues.forEach((r) => event.tags.push(['tool', r.title]));
         $dietValues.forEach((d) => event.tags.push(['dietary_restrictions', d.title]));
+        $selectedRecipesArray.forEach((_, r) => {
+          event.tags.push(['a', r]);
+        });
         /*
 		event.tags.push([
           'client',
@@ -225,7 +240,7 @@
           'wss://relay.nostrsf.org'
         ]);
 		*/
-        console.log('event to publish:', event);
+        console.log('event to publish:', event.toNostrEvent());
         let relays = await event.publish();
         resultMessage = 'Succes!';
         relays.forEach((relay) => {

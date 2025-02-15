@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { writable, get, type Writable } from 'svelte/store';
+  import { type Writable } from 'svelte/store';
   import Button from './Button.svelte';
   import TrashIcon from 'phosphor-svelte/lib/Trash';
   import { slide } from 'svelte/transition';
@@ -9,8 +9,9 @@
     { key: 'calories', label: 'Calories', emoji: '🔥' },
     { key: 'carbohydrate_content', label: 'Carbohydrates', emoji: '🍞' },
     { key: 'protein_content', label: 'Protein', emoji: '🍗' },
-    { key: 'fatContent', label: 'Fat', emoji: '🥑' },
+    { key: 'fat_content', label: 'Fat', emoji: '🥑' },
     { key: 'saturated_fat_content', label: 'Saturated Fat', emoji: '🧈' },
+    { key: 'cholesterol_content', label: 'Cholestrerol', emoji: '🫀'},
     { key: 'sodium_content', label: 'Sodium', emoji: '🧂' },
     { key: 'fiber_content', label: 'Fiber', emoji: '🌾' },
     { key: 'sugar_content', label: 'Sugar', emoji: '🍭' },
