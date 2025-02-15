@@ -48,11 +48,7 @@
   let dietValues: Writable<recipeTagSimple[]> = writable([]);
 
   function normalizeCase(input: string): string {
-    return (
-      input
-        .replace(/([a-z])([A-Z])/g, '$1_$2')
-        .toLowerCase()
-    );
+    return input.replace(/([a-z])([A-Z])/g, '$1_$2').toLowerCase();
   }
 
   function addTag(query: string) {

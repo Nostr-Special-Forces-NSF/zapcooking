@@ -36,7 +36,7 @@
   {#if $selectedTags.length > 0}
     <ul class="flex flex-col gap-2">
       {#each $selectedTags as tag, index}
-        <li class="flex input" transition:slide|global={{ duration: 300 }}>
+        <li class="input flex" transition:slide|global={{ duration: 300 }}>
           <span class="grow">
             {#if tag.emoji}
               <span>{tag.emoji} </span>
@@ -44,7 +44,7 @@
             {tag.title}
           </span>
           <div class="flex gap-2">
-            <button type="button" class="self-center text-danger" on:click={() => removeTag(index)}>
+            <button type="button" class="text-danger self-center" on:click={() => removeTag(index)}>
               <TrashIcon />
             </button>
           </div>
@@ -54,8 +54,4 @@
   {/if}
 </div>
 
-<TagsSearchAutocomplete
-  placeholderString={placeholderString}
-  action={addTag}
-  recipeTags={tagArray}
-/>
+<TagsSearchAutocomplete {placeholderString} action={addTag} recipeTags={tagArray} />

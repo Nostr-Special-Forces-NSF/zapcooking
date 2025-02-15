@@ -19,7 +19,7 @@
         const naddr = nip19.naddrEncode({
           identifier: d,
           kind: event.kind as number,
-          pubkey: event.author.pubkey,
+          pubkey: event.author.pubkey
         });
         link = `/${list ? 'list' : 'recipe'}/${naddr}`;
       }
@@ -47,9 +47,9 @@
   function toggleSelection(e: { stopPropagation: () => void }) {
     e.stopPropagation(); // Prevents navigation when clicking the checkbox
     selected = !selected;
-	if (selected) {
-		selectedRecipes.update((s) => s.add(event.id));
-	}
+    if (selected) {
+      selectedRecipes.update((s) => s.add(event.id));
+    }
   }
 </script>
 
@@ -73,7 +73,10 @@
     data-sveltekit-preload
     class="flex flex-col gap-4"
   >
-    <div class="recipe-card-image image relative" style={`background-image: url('/placeholder.png');`}>
+    <div
+      class="recipe-card-image image relative"
+      style={`background-image: url('/placeholder.png');`}
+    >
       <div
         bind:this={imageElement}
         class="recipe-card-image image absolute top-0 right-0 bottom-0 left-0 transition-transform duration-700 ease-in-out hover:scale-105"

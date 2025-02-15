@@ -105,7 +105,7 @@
   {/if}
 </svelte:head>
 {#if loaded && event}
-  <div class="mb-6 prose">
+  <div class="prose mb-6">
     <h1 class="mb-0">
       {event.tags.find((t) => t[0] == 'name')?.[1]}
     </h1>
@@ -126,8 +126,8 @@
   </div>
 
   <Feed {events} />
-  {:else}
-  <div class="flex justify-center items-center h-screen">
+{:else}
+  <div class="flex h-screen items-center justify-center">
     <img class="w-64" src="/pan-animated.svg" alt="Loading" />
   </div>
 {/if}

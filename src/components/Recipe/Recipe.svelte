@@ -131,7 +131,9 @@
     fiber: '🌾',
     sugar: '🍭',
     serving: '🍽️',
-    cholesterol: '🫀'
+    cholesterol: '🫀',
+    trans: '🩸',
+    unsaturated: '🫠'
   };
 
   function normalizeCase(input: string): string {
@@ -312,7 +314,7 @@
             <p>{event.tagValue('summary')}</p>
           {/if}
           <h2>Details</h2>
-          <ul>
+          <ul style="list-style-type: none; padding-left: 0;">
             <li>⏲️ Prep time: {prepTime} minutes</li>
             <li>🍳 Cook time: {cookTime} minutes</li>
             <li>🍽️ Servings: {event.tagValue('servings')}</li>

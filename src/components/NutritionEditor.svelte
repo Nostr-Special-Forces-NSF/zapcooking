@@ -11,7 +11,7 @@
     { key: 'protein_content', label: 'Protein', emoji: '🍗' },
     { key: 'fat_content', label: 'Fat', emoji: '🥑' },
     { key: 'saturated_fat_content', label: 'Saturated Fat', emoji: '🧈' },
-    { key: 'cholesterol_content', label: 'Cholestrerol', emoji: '🫀'},
+    { key: 'cholesterol_content', label: 'Cholestrerol', emoji: '🫀' },
     { key: 'sodium_content', label: 'Sodium', emoji: '🧂' },
     { key: 'fiber_content', label: 'Fiber', emoji: '🌾' },
     { key: 'sugar_content', label: 'Sugar', emoji: '🍭' },

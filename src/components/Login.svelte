@@ -79,19 +79,19 @@
     <input
       placeholder="nsec..."
       bind:value={nsecInput}
-      class="mb-2 shadow-xs focus:ring-blue-500 focus:border-blue-500 block w-full sm:text-sm border-gray-300 rounded-md"
+      class="mb-2 block w-full rounded-md border-gray-300 shadow-xs focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
     />
 
     <button
       on:click={loginWithSk}
       type="button"
-      class="inline-flex items-center px-4 py-2 border border-transparent text-base font-medium rounded-md shadow-xs text-white bg-blue-600 hover:bg-blue-700 focus:outline-hidden focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+      class="inline-flex items-center rounded-md border border-transparent bg-blue-600 px-4 py-2 text-base font-medium text-white shadow-xs hover:bg-blue-700 focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 focus:outline-hidden"
       >Login</button
     >
     <button
       on:click={() => (showLoginWithPk = false)}
       type="button"
-      class="inline-flex items-center px-4 py-2 border border-transparent text-base font-medium rounded-md text-blue-700 bg-indigo-100 hover:bg-indigo-200 focus:outline-hidden focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+      class="inline-flex items-center rounded-md border border-transparent bg-indigo-100 px-4 py-2 text-base font-medium text-blue-700 hover:bg-indigo-200 focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 focus:outline-hidden"
       >Cancel</button
     >
   {:else}
@@ -99,7 +99,7 @@
       <button
         on:click={login}
         type="button"
-        class="inline-flex items-center px-4 py-2 border border-transparent text-base font-medium rounded-md shadow-xs text-white bg-blue-600 hover:bg-blue-700 focus:outline-hidden focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+        class="inline-flex items-center rounded-md border border-transparent bg-blue-600 px-4 py-2 text-base font-medium text-white shadow-xs hover:bg-blue-700 focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 focus:outline-hidden"
         >Login with Extention</button
       >
     </div>
@@ -107,7 +107,7 @@
       <button
         on:click={() => goto('/onboarding')}
         type="button"
-        class="inline-flex items-center px-4 py-2 border border-transparent text-base font-medium rounded-md shadow-xs text-white bg-blue-600 hover:bg-blue-700 focus:outline-hidden focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+        class="inline-flex items-center rounded-md border border-transparent bg-blue-600 px-4 py-2 text-base font-medium text-white shadow-xs hover:bg-blue-700 focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 focus:outline-hidden"
         >New to nostr?</button
       >
     </div>
@@ -115,7 +115,7 @@
       <button
         on:click={() => (showLoginWithPk = true)}
         type="button"
-        class="inline-flex items-center px-4 py-2 border border-transparent text-base font-medium rounded-md text-blue-700 bg-indigo-100 hover:bg-indigo-200 focus:outline-hidden focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+        class="inline-flex items-center rounded-md border border-transparent bg-indigo-100 px-4 py-2 text-base font-medium text-blue-700 hover:bg-indigo-200 focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 focus:outline-hidden"
         >Login with private key</button
       >
     </div>
@@ -136,7 +136,7 @@
   <button
     on:click={logout}
     type="button"
-    class="inline-flex items-center px-4 py-2 border border-transparent text-base font-medium rounded-md shadow-xs text-white bg-red-600 hover:bg-red-700 focus:outline-hidden focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
+    class="inline-flex items-center rounded-md border border-transparent bg-red-600 px-4 py-2 text-base font-medium text-white shadow-xs hover:bg-red-700 focus:ring-2 focus:ring-red-500 focus:ring-offset-2 focus:outline-hidden"
     >Logout</button
   >
 {/if}

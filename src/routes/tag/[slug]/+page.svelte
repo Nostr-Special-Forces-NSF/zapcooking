@@ -26,11 +26,11 @@
     let filter: NDKFilter = {
       limit: 256,
       kinds: [35000],
-      '#t': [`${$page.params.slug.toLowerCase().replaceAll(' ', '-')}`],
+      '#t': [`${$page.params.slug.toLowerCase().replaceAll(' ', '-')}`]
     };
     const evts = await $ndk.fetchEvents(filter);
     events = Array.from(evts);
-	loaded = true;
+    loaded = true;
   }
 </script>
 
@@ -91,7 +91,7 @@
   {#if events.length > 0}
     <Feed {events} />
   {:else if loaded == false}
-    <div class="flex justify-center items-center h-screen">
+    <div class="flex h-screen items-center justify-center">
       <img class="w-64" src="/pan-animated.svg" alt="Loading" />
     </div>
   {:else}

@@ -8,7 +8,7 @@
   import { goto } from '$app/navigation';
   import Modal from '../../components/Modal.svelte';
   import { nip19 } from 'nostr-tools';
-  import { privateKeyFromSeedWords } from 'nostr-tools/nip06'
+  import { privateKeyFromSeedWords } from 'nostr-tools/nip06';
 
   async function loadUserData() {
     if ($ndk.signer && $userPublickey == '') {
@@ -116,10 +116,10 @@
   <h2 slot="title">Login with Private Key</h2>
   <input class="input" type="text" bind:value={nsecInput} placeholder="nsec1..." />
   <div class="flex">
-    <span class="flex grow text-danger self-center">{nsecError}</span>
-    <div class="flex gap-2 justify-end">
+    <span class="text-danger flex grow self-center">{nsecError}</span>
+    <div class="flex justify-end gap-2">
       <Button
-        class="text-black! bg-white border border-[#ECECEC] hover:bg-accent-gray"
+        class="hover:bg-accent-gray border border-[#ECECEC] bg-white text-black!"
         on:click={nsecModalCleanup}>Cancel</Button
       >
       <Button on:click={loginWithSk}>Login</Button>
@@ -136,10 +136,10 @@
     placeholder="beyond mobile enough risk kite mechanic exact around..."
   />
   <div class="flex">
-    <span class="flex grow text-danger self-center">{seedError}</span>
-    <div class="flex gap-2 justify-end">
+    <span class="text-danger flex grow self-center">{seedError}</span>
+    <div class="flex justify-end gap-2">
       <Button
-        class="text-black! bg-white border border-[#ECECEC] hover:bg-accent-gray"
+        class="hover:bg-accent-gray border border-[#ECECEC] bg-white text-black!"
         on:click={seedModalCleanup}>Cancel</Button
       >
       <Button on:click={loginWithSeed}>Login</Button>
@@ -147,16 +147,16 @@
   </div>
 </Modal>
 
-<div class="flex flex-col gap-8 justify-center items-center text-center">
+<div class="flex flex-col items-center justify-center gap-8 text-center">
   <div class="flex flex-col gap-6">
     <div class="text-3xl font-semibold">Sign in</div>
     <div class="flex flex-col gap-4">
       <button
         on:click={loginWithNIP07}
-        class="flex w-[320px] h-[52px] gap-2 shadow-sm rounded-xl justify-center text-center font-semibold border box-border border-[#D1D3DC]"
+        class="box-border flex h-[52px] w-[320px] justify-center gap-2 rounded-xl border border-[#D1D3DC] text-center font-semibold shadow-sm"
       >
         <span
-          class="flex justify-center items-center rounded-full bg-[#FA9101] self-center w-10 h-10 text-white"
+          class="flex h-10 w-10 items-center justify-center self-center rounded-full bg-[#FA9101] text-white"
         >
           <KeyIcon size={24} />
         </span>
@@ -164,10 +164,10 @@
       </button>
       <button
         on:click={() => (nsecModal = true)}
-        class="flex w-[320px] h-[52px] gap-2 shadow-sm rounded-xl justify-center text-center font-semibold border box-border border-[#D1D3DC]"
+        class="box-border flex h-[52px] w-[320px] justify-center gap-2 rounded-xl border border-[#D1D3DC] text-center font-semibold shadow-sm"
       >
         <span
-          class="flex justify-center items-center rounded-full bg-danger self-center w-10 h-10 text-white"
+          class="bg-danger flex h-10 w-10 items-center justify-center self-center rounded-full text-white"
         >
           <KeyIcon size={24} />
         </span>
@@ -175,10 +175,10 @@
       </button>
       <button
         on:click={() => (seedModal = true)}
-        class="flex w-[320px] h-[52px] gap-2 shadow-sm rounded-xl justify-center text-center font-semibold border box-border border-[#D1D3DC]"
+        class="box-border flex h-[52px] w-[320px] justify-center gap-2 rounded-xl border border-[#D1D3DC] text-center font-semibold shadow-sm"
       >
         <span
-          class="flex justify-center items-center rounded-full bg-green-500 self-center w-10 h-10 text-white"
+          class="flex h-10 w-10 items-center justify-center self-center rounded-full bg-green-500 text-white"
         >
           <SeedIcon size={24} />
         </span>
@@ -186,7 +186,7 @@
       </button>
     </div>
   </div>
-  <div class="flex flex-col font-semibold gap-3">
+  <div class="flex flex-col gap-3 font-semibold">
     Don't have an account?
     <a href="/onboarding">
       <Button class="self-center" primary={false}>Sign up</Button>

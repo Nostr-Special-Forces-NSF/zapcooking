@@ -38,7 +38,7 @@
   // Fetch recipes on mount
   onMount(() => {
     fetchRecipes();
-	console.log($selectedRecipesArray);
+    console.log($selectedRecipesArray);
   });
 
   function handleSelection(event: Event) {
@@ -46,7 +46,7 @@
     const selectedId = select.value;
     const selectedText = select.options[select.selectedIndex].text;
     selectedRecipesArray.update((store) => store.set(selectedId, selectedText));
-}
+  }
 
   function removeItem(index: string) {
     selectedRecipesArray.update((store) => (store.delete(index) ? store : store));
@@ -79,7 +79,11 @@
         <li class="input flex">
           <span class="grow">{item[1]}</span>
           <div class="flex gap-2">
-            <button type="button" class="text-danger self-center" on:click={() => removeItem(item[0])}>
+            <button
+              type="button"
+              class="text-danger self-center"
+              on:click={() => removeItem(item[0])}
+            >
               <TrashIcon />
             </button>
           </div>

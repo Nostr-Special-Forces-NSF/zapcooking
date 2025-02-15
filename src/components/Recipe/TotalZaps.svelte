@@ -12,11 +12,14 @@
   let hasUserZapped = false;
 
   async function fetch() {
-    const sub = await $ndk.subscribe({
-      kinds: [9735],
-      '#a': [`${event.kind}:${event.author.pubkey}:${event.tags.find((e) => e[0] == 'd')?.[1]}`]
-    }, { closeOnEose: false });
-    sub.on("event", (event: NDKEvent) => {
+    const sub = await $ndk.subscribe(
+      {
+        kinds: [9735],
+        '#a': [`${event.kind}:${event.author.pubkey}:${event.tags.find((e) => e[0] == 'd')?.[1]}`]
+      },
+      { closeOnEose: false }
+    );
+    sub.on('event', (event: NDKEvent) => {
       let bolt11 = event.tags.find((e) => e[0] == 'bolt11')?.[1];
       if (bolt11 && event.sig) {
         if (!didSigs.has(event.sig)) {
@@ -25,7 +28,7 @@
             totalZapAmount + Number(decoded.sections.find((e) => e.name == 'amount').value);
           didSigs.set(event.sig, event.sig);
 
-          if (event.tags.some(tag => tag[0] === 'P' && tag[1] === $userPublickey)) {
+          if (event.tags.some((tag) => tag[0] === 'P' && tag[1] === $userPublickey)) {
             hasUserZapped = true;
           }
         }
@@ -39,7 +42,11 @@
   loading = false;
 </script>
 
-<div class="flex gap-1.5 hover:bg-input rounded-sm px-0.5 transition duration-300">
-  <LightningIcon size={24} color={hasUserZapped ? '#facc15' : ''} weight={hasUserZapped ? "fill" : "regular"} />
+<div class="hover:bg-input flex gap-1.5 rounded-sm px-0.5 transition duration-300">
+  <LightningIcon
+    size={24}
+    color={hasUserZapped ? '#facc15' : ''}
+    weight={hasUserZapped ? 'fill' : 'regular'}
+  />
   {#if loading}...{:else}{formatAmount(totalZapAmount / 1000)} sats{/if}
 </div>

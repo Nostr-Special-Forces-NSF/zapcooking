@@ -76,18 +76,18 @@
     <h2>Relays</h2>
     <div class="flex flex-col gap-2">
       {#each relays as relay, index}
-        <div class="flex bg-input p-3 rounded-xl">
+        <div class="bg-input flex rounded-xl p-3">
           <span class="grow">{relay}</span>
-          <button class="self-center text-danger" on:click={() => removeRelay(index)}>
+          <button class="text-danger self-center" on:click={() => removeRelay(index)}>
             <TrashIcon />
           </button>
         </div>
       {/each}
-      <div class="flex gap-4 mx-0.5">
+      <div class="mx-0.5 flex gap-4">
         <input
           bind:value={newRelay}
           placeholder="wss://relay.example.com"
-          class="flex p-3 bg-input rounded-xl border-none"
+          class="bg-input flex rounded-xl border-none p-3"
         />
         <Button on:click={addRelay} primary={false}>Add</Button>
       </div>
@@ -96,8 +96,8 @@
 
   <div class="flex flex-col gap-4">
     <h2>Translation</h2>
-    <div class="flex flex-col mx-0.5 gap-4">
-      <select bind:value={translation} class="flex p-3 bg-input rounded-xl border-none">
+    <div class="mx-0.5 flex flex-col gap-4">
+      <select bind:value={translation} class="bg-input flex rounded-xl border-none p-3">
         <option value="">Disabled</option>
         <option value="google">Google Translate (with proxy)</option>
         <!--<option value="libretranslate">Libretranslate Instance</option>-->
@@ -106,16 +106,16 @@
         <input
           bind:value={translationLanguage}
           placeholder="2 letter language code, like: 'en', 'es', 'fr' ect"
-          class="flex p-3 bg-input rounded-xl border-none"
+          class="bg-input flex rounded-xl border-none p-3"
         />
         <input
           bind:value={translationOption}
           placeholder={(translation == 'google'
             ? 'set CORS proxy url,'
             : translation == 'libretranslate'
-            ? 'libretranslate instance url,'
-            : '') + ' leave blank for default'}
-          class="flex p-3 bg-input rounded-xl border-none"
+              ? 'libretranslate instance url,'
+              : '') + ' leave blank for default'}
+          class="bg-input flex rounded-xl border-none p-3"
         />
       {/if}
     </div>
@@ -142,7 +142,7 @@
           tabindex="0"
           on:keydown={() => (showPrivkey = true)}
           on:click={() => (showPrivkey = true)}
-          class="input border-accent-gray! border-2! flex flex-wrap text-wrap break-all"
+          class="input border-accent-gray! flex flex-wrap border-2! text-wrap break-all"
         >
           {#if showPrivkey}
             {nip19.nsecEncode(sk)}
@@ -157,7 +157,7 @@
     {/if}
     <h3>Clear all Data</h3>
     <Button
-      class="flex bg-danger! self-start gap-2"
+      class="bg-danger! flex gap-2 self-start"
       primary={false}
       on:click={() => (window.location.href = '/clearall')}
     >

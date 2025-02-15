@@ -25,4 +25,3 @@ jobs:
       - name: Install npm packages 📦
         run: |
           npm ci
-

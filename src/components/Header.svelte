@@ -38,55 +38,71 @@
 </script>
 
 {#if searchActive}
-  <div class="fixed z-20 w-full h-full top-0 left-0 duration-500 transition-opacity bg-opacity-50 backdrop-blur-xs" transition:blur={{ amount: 10, duration: 300 }}>
-    <div class="fixed z-25 inset-x-0 top-20 w-3/4 md:w-1/2 lg:w-1/3 mx-auto" use:clickOutside on:click_outside={() => (searchActive = false)} >
-        <TagsSearchAutocomplete
-            placeholderString={"Search by tag, like 'italian', 'steak' or 'glutenfree'."}
-            action={openTag}
-            autofocus={true}
-        />
+  <div
+    class="bg-opacity-50 fixed top-0 left-0 z-20 h-full w-full backdrop-blur-xs transition-opacity duration-500"
+    transition:blur={{ amount: 10, duration: 300 }}
+  >
+    <div
+      class="fixed inset-x-0 top-20 z-25 mx-auto w-3/4 md:w-1/2 lg:w-1/3"
+      use:clickOutside
+      on:click_outside={() => (searchActive = false)}
+    >
+      <TagsSearchAutocomplete
+        placeholderString={"Search by tag, like 'italian', 'steak' or 'glutenfree'."}
+        action={openTag}
+        autofocus={true}
+      />
     </div>
-  </div>  
+  </div>
 {/if}
 
-<div class="flex gap-9 justify-between">
+<div class="flex justify-between gap-9">
   <a href="/recent" class="flex-none">
-    <img src={SVGNostrCookingWithText} class="w-40 my-3" alt="Nostr.Cooking Logo With Text" />
+    <img src={SVGNostrCookingWithText} class="my-3 w-40" alt="Nostr.Cooking Logo With Text" />
   </a>
 
-  <div class="hidden lg:flex gap-10 self-center font-semibold">
-    <a class="transition duration-300 hover:text-primary" href="/recent">Discover</a>
-    <a class="transition duration-300 hover:text-primary" href="/tags">Categories</a>
+  <div class="hidden gap-10 self-center font-semibold lg:flex">
+    <a class="hover:text-primary transition duration-300" href="/recent">Discover</a>
+    <a class="hover:text-primary transition duration-300" href="/tags">Categories</a>
   </div>
 
-  <div class="hidden sm:flex flex-1 grow self-center">
+  <div class="hidden flex-1 grow self-center sm:flex">
     <TagsSearchAutocomplete
       placeholderString={"Search by tag, like 'italian', 'steak' or 'glutenfree'."}
       action={openTag}
     />
   </div>
-  <div class="flex gap-4 self-center flex-none">
-    <div class="block sm:hidden self-center">
+  <div class="flex flex-none gap-4 self-center">
+    <div class="block self-center sm:hidden">
       <!-- for some reason if i have all of these selector classes then it styles correctly. wtf. -->
-      <Button class="self-center max-md:w-10 max-md:h-10 flex max-md:justify-center max-md:px-1 max-md:py-1 font-semibold bg-[#FFECE8]!" on:click={() => searchActive = true}>
-          <SearchIcon class="self-center text-primary" size={16} weight="bold" />
+      <Button
+        class="flex self-center bg-[#FFECE8]! font-semibold max-md:h-10 max-md:w-10 max-md:justify-center max-md:px-1 max-md:py-1"
+        on:click={() => (searchActive = true)}
+      >
+        <SearchIcon class="text-primary self-center" size={16} weight="bold" />
       </Button>
     </div>
     {#if $userPublickey !== ''}
-      <a class="hidden lg:flex self-center gap-2 transition duration-300 font-semibold hover:text-primary" href="/bookmarks">
+      <a
+        class="hover:text-primary hidden gap-2 self-center font-semibold transition duration-300 lg:flex"
+        href="/bookmarks"
+      >
         <BookmarkIcon class="self-center" size="30px" weight="bold" />
         <span class="self-center">Bookmarks</span>
       </a>
-      <Button class="self-center max-md:w-10 max-md:h-10 flex max-md:justify-center max-md:px-1 max-md:py-1 font-semibold gap-2" on:click={() => goto('/create')}>
-          <AddIcon class="self-center" size={16} />
-          <div class="hidden md:flex">Add Recipe</div>
+      <Button
+        class="flex gap-2 self-center font-semibold max-md:h-10 max-md:w-10 max-md:justify-center max-md:px-1 max-md:py-1"
+        on:click={() => goto('/create')}
+      >
+        <AddIcon class="self-center" size={16} />
+        <div class="hidden md:flex">Add Recipe</div>
       </Button>
     {/if}
     <div class="self-center">
       {#if $userPublickey !== ''}
         <button class="flex self-center" on:click={() => (dropdownActive = !dropdownActive)}>
           <Avatar
-            class="cursor-pointer w-12 h-12 object-center rounded-full"
+            class="h-12 w-12 cursor-pointer rounded-full object-center"
             ndk={$ndk}
             pubkey={$userPublickey}
           />
@@ -100,20 +116,20 @@
               on:keydown={(e) => e.key === 'Escape' && (dropdownActive = false)}
               use:clickOutside
               on:click_outside={() => (dropdownActive = false)}
-              class="flex flex-col right-3 gap-4 absolute z-10 bg-white rounded-3xl drop-shadow-sm px-5 py-6"
+              class="absolute right-3 z-10 flex flex-col gap-4 rounded-3xl bg-white px-5 py-6 drop-shadow-sm"
             >
               <button
-                class="flex gap-2 cursor-pointer"
+                class="flex cursor-pointer gap-2"
                 on:click={() => goto(`/user/${nip19.npubEncode($userPublickey)}`)}
               >
                 <UserIcon class="self-center" size={18} />
                 Profile
               </button>
-              <button class="flex gap-2 cursor-pointer" on:click={() => goto('/settings')}>
+              <button class="flex cursor-pointer gap-2" on:click={() => goto('/settings')}>
                 <GearIcon class="self-center" size={18} />
                 Settings
               </button>
-              <button class="flex gap-2 cursor-pointer" on:click={logout}>
+              <button class="flex cursor-pointer gap-2" on:click={logout}>
                 <SignOutIcon class="self-center" size={18} />
                 Log out
               </button>

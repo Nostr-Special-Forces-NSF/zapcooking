@@ -59,7 +59,7 @@
   {#if $selected.length > 0}
     <ul class="flex flex-col gap-2">
       {#each $selected as tag, index}
-        <li class="flex input" transition:slide|global={{ duration: 300 }}>
+        <li class="input flex" transition:slide|global={{ duration: 300 }}>
           <a class="grow underline" target="_blank" href={`/recipe/${tag.naddr}`}
             >{#if tag.title}{tag.title}{:else}{tag.naddr}{/if}</a
           >
@@ -67,7 +67,7 @@
             {#if showIndex && index > 0}
               <button
                 type="button"
-                class="px-2 py-[0.05rem] rounded-sm"
+                class="rounded-sm px-2 py-[0.05rem]"
                 on:click={() => moveTagUp(index)}
               >
                 ↑
@@ -76,13 +76,13 @@
             {#if showIndex && index < $selected.length - 1}
               <button
                 type="button"
-                class="px-2 py-[0.05rem] rounded-sm"
+                class="rounded-sm px-2 py-[0.05rem]"
                 on:click={() => moveTagDown(index)}
               >
                 ↓
               </button>
             {/if}
-            <button class="self-center text-danger" on:click={() => removeTag(index)}>
+            <button class="text-danger self-center" on:click={() => removeTag(index)}>
               <TrashIcon />
             </button>
           </div>

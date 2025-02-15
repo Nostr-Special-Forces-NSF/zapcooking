@@ -27,7 +27,7 @@
       let filter: NDKFilter = {
         authors: [hexpubkey],
         limit: 256,
-        kinds: [30003],
+        kinds: [30003]
       };
       const evts = await $ndk.fetchEvents(filter);
       let evtsArr = Array.from(evts);

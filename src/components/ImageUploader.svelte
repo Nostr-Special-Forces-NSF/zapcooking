@@ -50,13 +50,13 @@
 </script>
 
 <div
-  class="flex justify-center bg-input rounded-lg border border-dashed border-[#CCCCCC] px-6 py-10 text-[#1F1D1B]/50"
+  class="bg-input flex justify-center rounded-lg border border-dashed border-[#CCCCCC] px-6 py-10 text-[#1F1D1B]/50"
 >
   <div class="text-center">
-    <div class="flex gap-0.5 text-sm leading-6 items-center">
+    <div class="flex items-center gap-0.5 text-sm leading-6">
       <label
         for="file-upload"
-        class="relative cursor-pointer rounded-md font-semibold text-blue-600 focus-within:outline-hidden focus-within:ring-2 focus-within:ring-blue-600 focus-within:ring-offset-2 hover:text-blue-500"
+        class="relative cursor-pointer rounded-md font-semibold text-blue-600 focus-within:ring-2 focus-within:ring-blue-600 focus-within:ring-offset-2 focus-within:outline-hidden hover:text-blue-500"
       >
         <span class="text-primary">Upload {name}</span>
         <input id="file-upload" bind:this={input} type="file" class="sr-only" />

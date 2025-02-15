@@ -18,7 +18,13 @@
 >
   {#if events.length > 0}
     {#each events as event}
-      <RecipeCard list={lists} {event} {selectable} selected={$selectedRecipes.has(event.id)} {selectedRecipes}/>
+      <RecipeCard
+        list={lists}
+        {event}
+        {selectable}
+        selected={$selectedRecipes.has(event.id)}
+        {selectedRecipes}
+      />
     {/each}
   {:else}
     {#each new Array(24) as i}

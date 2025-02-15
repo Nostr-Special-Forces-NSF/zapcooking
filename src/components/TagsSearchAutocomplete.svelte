@@ -64,13 +64,13 @@
   onMount(() => {
     // Initialize filteredTags with all tags on component mount
     filteredTags = recipeTags.slice(0, maxAutocompleteOptions);
-	if (autofocus) inputElement?.focus();
+    if (autofocus) inputElement?.focus();
   });
 </script>
 
 <div class="relative flex-1">
   <form
-    class="flex rounded-xl shadow-xs bg-input"
+    class="bg-input flex rounded-xl shadow-xs"
     on:submit|preventDefault={() => {
       if (tagquery) {
         action(tagquery);
@@ -78,22 +78,22 @@
       }
     }}
   >
-    <div class="flex mx-0.5 items-stretch grow focus-within:z-10">
+    <div class="mx-0.5 flex grow items-stretch focus-within:z-10">
       <input
         bind:value={tagquery}
         on:input={handleInputChange}
         on:focus={handleInputFocus}
         on:blur={handleInputBlur}
-        class="block w-full input"
+        class="input block w-full"
         placeholder={placeholderString}
-		bind:this={inputElement}
+        bind:this={inputElement}
       />
     </div>
     <input type="submit" class="hidden" />
   </form>
   {#if showAutocomplete && filteredTags.length > 0}
     <ul
-      class="max-h-[256px] overflow-y-scroll absolute top-full left-0 w-full bg-white border border-gray-300 shadow-lg rounded-xl mt-1 z-60"
+      class="absolute top-full left-0 z-60 mt-1 max-h-[256px] w-full overflow-y-scroll rounded-xl border border-gray-300 bg-white shadow-lg"
     >
       {#each filteredTags as tag (tag.title)}
         <!-- svelte-ignore a11y-click-events-have-key-events -->
@@ -104,7 +104,7 @@
             action(tagquery);
             tagquery = '';
           }}
-          class="cursor-pointer p-2 hover:bg-gray-100 autocomplete-item"
+          class="autocomplete-item cursor-pointer p-2 hover:bg-gray-100"
         >
           {#if tag.emoji}
             <span>{tag.emoji} </span>

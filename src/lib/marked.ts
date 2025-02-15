@@ -4,7 +4,6 @@ import { ndk, userPublickey } from './nostr';
 import { NDKSubscriptionCacheUsage } from '@nostr-dev-kit/ndk';
 import { nip19 } from 'nostr-tools';
 
-
 const getPub = async (token: Token) => {
   if (token.type === 'nostr') {
     const id = `${token.tagType}${token.content}`;
@@ -106,7 +105,7 @@ const nostrTokenizer: TokenizerAndRendererExtension = {
         break;
       case 'npub':
       case 'naddr':
-		url=`/recipe/${tagType}${content}`
+        url = `/recipe/${tagType}${content}`;
         break;
     }
     return `<a href="${url}">${linkText}</a>`;
@@ -152,12 +151,11 @@ const emailTokenizer: TokenizerAndRendererExtension = {
 marked.use({
   extensions: [nostrTokenizer, emailTokenizer],
   async: true,
-  walkTokens: getPub,
+  walkTokens: getPub
 });
 
 export async function parseMarkdown(content: string): Promise<string> {
-    const parsed = await marked(content);
-    const sanitizedContent = DOMPurify.sanitize(parsed);
-	return sanitizedContent;
+  const parsed = await marked(content);
+  const sanitizedContent = DOMPurify.sanitize(parsed);
+  return sanitizedContent;
 }
-

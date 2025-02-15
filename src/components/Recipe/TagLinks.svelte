@@ -21,8 +21,8 @@
   {#each tags as tag}
     <a
       href="/tag/{tag.title}"
-      class="rounded-full px-2 py-1 bg-input text-black hover:bg-accent-gray transition duration-300
-     cursor-pointer"
+      class="bg-input hover:bg-accent-gray cursor-pointer rounded-full px-2 py-1 text-black transition
+     duration-300"
     >
       {tag.title}
     </a>

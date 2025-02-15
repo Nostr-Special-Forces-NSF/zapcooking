@@ -130,7 +130,7 @@
     <Feed {events} />
   </div>
 {:else}
-  <div class="flex justify-center items-center h-screen">
+  <div class="flex h-screen items-center justify-center">
     <img class="w-64" src="/pan-animated.svg" alt="Loading" />
   </div>
 {/if}

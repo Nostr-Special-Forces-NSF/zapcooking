@@ -65,16 +65,16 @@
 </svelte:head>
 
 <div class="flex flex-col gap-3 md:gap-10">
-  <div class="hidden lg:flex w-screen gap-6 overflow-y-hidden overflow-x-auto">
+  <div class="hidden w-screen gap-6 overflow-x-auto overflow-y-hidden lg:flex">
     {#each popTags as tag}
-      <a class="flex transition duration-300 hover:text-primary" href="/tag/{tag.title}"
+      <a class="hover:text-primary flex transition duration-300" href="/tag/{tag.title}"
         >{tag.title}</a
       >
     {/each}
   </div>
 
   <div class="lg:hidden">
-    <select class="w-full input" on:change={handleChange}>
+    <select class="input w-full" on:change={handleChange}>
       <option value="">All categories</option>
       {#each popTags as tag}
         <option value="/tag/{tag.title}">{tag.title}</option>
@@ -84,6 +84,6 @@
 
   <div class="flex flex-col gap-2">
     <h2>Recent Recipes</h2>
-    <div><Feed {events}/></div>
+    <div><Feed {events} /></div>
   </div>
 </div>

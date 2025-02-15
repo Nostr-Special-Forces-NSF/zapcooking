@@ -8,7 +8,7 @@
 
 <div class="flex gap-4">
   <a href="/user/{nip19.npubEncode(pubkey)}" class="flex gap-4 self-center">
-    <Avatar class="w-14 h-14 rounded-full self-center" ndk={$ndk} {pubkey} />
+    <Avatar class="h-14 w-14 self-center rounded-full" ndk={$ndk} {pubkey} />
     <Name class="self-center" ndk={$ndk} {pubkey} />
   </a>
   <!-- <Button class="flex self-center">Follow</Button> -->

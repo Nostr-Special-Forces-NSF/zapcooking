@@ -5,20 +5,20 @@
   import SVGNostrCookingWithText from '../assets/nostr.cooking-withtext.svg';
 </script>
 
-<div class="m-4 hidden md:block w-3/12 rounded-xl min-w-[256px] bg-gray-50 px-4 py-2">
+<div class="m-4 hidden w-3/12 min-w-[256px] rounded-xl bg-gray-50 px-4 py-2 md:block">
   <div class="w-full">
     <img
       src={SVGNostrCookingWithText}
-      class="h-full w-full my-3"
+      class="my-3 h-full w-full"
       alt="Nostr.Cooking Logo With Text"
     />
     <button
       on:click={() => goto('/recent')}
-      class="px-3 py-3 bg-white border border-gray-300 hover:bg-slate-50 rounded-lg mt-2 w-full"
+      class="mt-2 w-full rounded-lg border border-gray-300 bg-white px-3 py-3 hover:bg-slate-50"
     >
       <div class="text-left font-medium">
         <svg
-          class="inline w-6 h-6 mr-1"
+          class="mr-1 inline h-6 w-6"
           xmlns="http://www.w3.org/2000/svg"
           fill="none"
           viewBox="0 0 24 24"
@@ -35,7 +35,7 @@
     </button>
     {#if $userPublickey !== ''}
       <button
-        class="px-3 py-3 bg-white border border-gray-300 hover:bg-slate-50 rounded-lg mt-2 w-full"
+        class="mt-2 w-full rounded-lg border border-gray-300 bg-white px-3 py-3 hover:bg-slate-50"
         on:click={() => goto(`/bookmarks`)}
       >
         <div class="text-left font-medium">
@@ -45,7 +45,7 @@
             viewBox="0 0 24 24"
             stroke-width="1.5"
             stroke="currentColor"
-            class="inline w-6 h-6 mr-1"
+            class="mr-1 inline h-6 w-6"
           >
             <path
               stroke-linecap="round"
@@ -58,11 +58,11 @@
       </button>
       <button
         on:click={() => goto('/create')}
-        class="px-3 py-3 bg-white border border-gray-300 hover:bg-slate-50 rounded-lg mt-2 w-full"
+        class="mt-2 w-full rounded-lg border border-gray-300 bg-white px-3 py-3 hover:bg-slate-50"
       >
         <div class="text-left font-medium">
           <svg
-            class="inline w-6 h-6 mr-1"
+            class="mr-1 inline h-6 w-6"
             xmlns="http://www.w3.org/2000/svg"
             fill="none"
             viewBox="0 0 24 24"
@@ -79,11 +79,11 @@
       </button>
       <button
         on:click={() => goto(`/user/${nip19.npubEncode($userPublickey)}`)}
-        class="px-3 py-3 bg-white border border-gray-300 hover:bg-slate-50 rounded-lg mt-2 w-full"
+        class="mt-2 w-full rounded-lg border border-gray-300 bg-white px-3 py-3 hover:bg-slate-50"
       >
         <div class="text-left font-medium">
           <svg
-            class="inline w-6 h-6 mr-1"
+            class="mr-1 inline h-6 w-6"
             xmlns="http://www.w3.org/2000/svg"
             fill="none"
             viewBox="0 0 24 24"
@@ -101,11 +101,11 @@
     {/if}
     <button
       on:click={() => goto('/settings')}
-      class="px-3 py-3 bg-white border border-gray-300 hover:bg-slate-50 rounded-lg mt-2 w-full"
+      class="mt-2 w-full rounded-lg border border-gray-300 bg-white px-3 py-3 hover:bg-slate-50"
     >
       <div class="text-left font-medium">
         <svg
-          class="inline w-6 h-6 mr-1"
+          class="mr-1 inline h-6 w-6"
           xmlns="http://www.w3.org/2000/svg"
           fill="none"
           viewBox="0 0 24 24"
@@ -147,7 +147,7 @@
     -->
   </div>
   <hr class="my-4" />
-  <div class="text-center w-full text-sm">
+  <div class="w-full text-center text-sm">
     <!-- <img
     src={SVGNostrCookingWithText}
     class="h-full w-full mb-[-1.25rem] mt-[-0.25rem]"

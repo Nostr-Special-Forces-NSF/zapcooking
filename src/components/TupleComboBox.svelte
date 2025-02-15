@@ -79,9 +79,9 @@
   {#if $selected.length > 0}
     <ul class="flex flex-col gap-2">
       {#each $selected as [amount, ingredient], index}
-        <li class="flex input" transition:slide|global={{ duration: 300 }}>
+        <li class="input flex" transition:slide|global={{ duration: 300 }}>
           {#if editingIndex === index}
-            <div class="flex gap-2 grow">
+            <div class="flex grow gap-2">
               <input class="input" bind:value={amount} placeholder={amountPlaceholder} />
               <input class="input" bind:value={ingredient} placeholder={ingredientPlaceholder} />
             </div>
@@ -97,7 +97,7 @@
               {#if showIndex && index > 0}
                 <button
                   type="button"
-                  class="px-2 py-[0.05rem] rounded-sm"
+                  class="rounded-sm px-2 py-[0.05rem]"
                   on:click={() => moveItemUp(index)}
                 >
                   ↑
@@ -106,13 +106,17 @@
               {#if showIndex && index < $selected.length - 1}
                 <button
                   type="button"
-                  class="px-2 py-[0.05rem] rounded-sm"
+                  class="rounded-sm px-2 py-[0.05rem]"
                   on:click={() => moveItemDown(index)}
                 >
                   ↓
                 </button>
               {/if}
-              <button type="button" class="self-center text-danger" on:click={() => removeItem(index)}>
+              <button
+                type="button"
+                class="text-danger self-center"
+                on:click={() => removeItem(index)}
+              >
                 <TrashIcon />
               </button>
             </div>

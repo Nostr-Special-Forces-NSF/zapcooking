@@ -8,12 +8,12 @@
   on:click={onClick}
   type="button"
   class={`
-    md:px-4
-    py-3
-    font-semibold
     rounded-full
-    text-black
+    py-3
     text-center
+    font-semibold
+    text-black
+    md:px-4
     ${selected ? 'bg-accent-gray' : 'bg-input hover:bg-gray-200'}
     `}>{text}</button
 >

@@ -124,7 +124,7 @@
   /**
    * Re-render all lines whenever `markdownLines` changes
    */
-   $: if ($markdownLines) {
+  $: if ($markdownLines) {
     reRenderLines();
   }
 
@@ -132,15 +132,15 @@
   async function reRenderLines() {
     // Wait for each line to be parsed asynchronously
     const linesArray = $markdownLines;
-	const result:string[] = [];
-	for (let line of linesArray) {
-		let rline = isListMarkdown(line) ? line : await parseMarkdown(line);
-		console.log(rline);
-		result.push(rline);
-	}
-	renderedLines.set(result);
-	combinedMarkdown = get(markdownLines).join('\n');
-	console.log(combinedMarkdown);
+    const result: string[] = [];
+    for (let line of linesArray) {
+      let rline = isListMarkdown(line) ? line : await parseMarkdown(line);
+      console.log(rline);
+      result.push(rline);
+    }
+    renderedLines.set(result);
+    combinedMarkdown = get(markdownLines).join('\n');
+    console.log(combinedMarkdown);
   }
 
   /**
@@ -151,7 +151,7 @@
     if (!userInput.trim()) return;
     const option = markdownOptions.find((o) => o.label === selectedOption);
     let transformed = userInput.trim();
-	if (option) transformed = option.transform(transformed);
+    if (option) transformed = option.transform(transformed);
     markdownLines.update((lines) => [...lines, transformed]);
     // Reset
     selectedOption = '';
@@ -242,12 +242,7 @@
     {/each}
   </select>
 
-  <input
-    type="text"
-    class="input grow"
-    bind:value={userInput}
-    placeholder="Enter text or URL"
-  />
+  <input type="text" class="input grow" bind:value={userInput} placeholder="Enter text or URL" />
 
   <Button on:click={addLine}>Add Line</Button>
 </form>

@@ -139,7 +139,7 @@
     on:click={() => {
       addBookMark();
     }}
-    class="text-gray-700 w-full text-left hover:bg-gray-100 hover:text-gray-900 block px-4 py-2"
+    class="block w-full px-4 py-2 text-left text-gray-700 hover:bg-gray-100 hover:text-gray-900"
     ><span
       ><svg
         xmlns="http://www.w3.org/2000/svg"
@@ -147,7 +147,7 @@
         viewBox="0 0 24 24"
         stroke-width="1.5"
         stroke="currentColor"
-        class="w-6 h-6 inline text-center mr-1"
+        class="mr-1 inline h-6 w-6 text-center"
       >
         <path
           stroke-linecap="round"
@@ -163,7 +163,7 @@
     on:click={() => {
       removeBookmark();
     }}
-    class="text-gray-700 w-full text-left hover:bg-gray-100 hover:text-gray-900 block px-4 py-2"
+    class="block w-full px-4 py-2 text-left text-gray-700 hover:bg-gray-100 hover:text-gray-900"
     ><span
       ><svg
         xmlns="http://www.w3.org/2000/svg"
@@ -171,7 +171,7 @@
         viewBox="0 0 24 24"
         stroke-width="1.5"
         stroke="currentColor"
-        class="w-6 h-6 inline text-center mr-1"
+        class="mr-1 inline h-6 w-6 text-center"
       >
         <path
           stroke-linecap="round"
@@ -185,7 +185,7 @@
   >
 {:else}
   <button
-    class="text-gray-700 w-full text-left hover:bg-gray-100 hover:text-gray-900 block px-4 py-2"
+    class="block w-full px-4 py-2 text-left text-gray-700 hover:bg-gray-100 hover:text-gray-900"
     ><span>Updating Bookmarks...</span></button
   >
 {/if}

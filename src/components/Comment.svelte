@@ -31,7 +31,7 @@
 
 <div id="comments" class="flex gap-4 break-all">
   <a class="flex shrink-0" href="/user/{nip19.npubEncode(event.pubkey)}"
-    ><Avatar class="rounded-full w-12 h-12" ndk={$ndk} pubkey={event.pubkey} /></a
+    ><Avatar class="h-12 w-12 rounded-full" ndk={$ndk} pubkey={event.pubkey} /></a
   >
   <div class="flex flex-col self-center">
     <div class="flex gap-2">
@@ -44,7 +44,7 @@
       </p>
       <button
         on:click={() => (showReplyBox = !showReplyBox)}
-        class="text-gray-500 cursor-pointer self-start"
+        class="cursor-pointer self-start text-gray-500"
       >
         Reply
       </button>
