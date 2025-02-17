@@ -6,10 +6,8 @@
   import TrashIcon from 'phosphor-svelte/lib/Trash';
   import { slide } from 'svelte/transition';
 
-  export let markdownLines: Writable<string[]>;
-
-  // Convert lines to a single content string, and vice versa
-  let content = writable($markdownLines.join('\n'));
+  export let content: Writable<string>;
+  let markdownLines: Writable<string[]> = writable(splitByOrderedList($content));
 
   // A list of transformations for quick insert
   const markdownOptions = [
@@ -59,6 +57,62 @@
   let inputAltText = '';
   let open = false;
 
+  /**
+   * Splits a Markdown string into an array of "chunks," starting a new chunk
+   * whenever a line begins with a typical ordered-list pattern like "1. " or "2) ".
+   *
+   * Example:
+   *   "Hello\n1. Step one\nMore text\n2. Step two\nEven more text"
+   * becomes:
+   *   [
+   *     "Hello",
+   *     "1. Step one\nMore text",
+   *     "2. Step two\nEven more text"
+   *   ]
+   */
+  export function splitByOrderedList(markdown: string): string[] {
+    // Split into lines (handling Windows \r\n too)
+    const lines = markdown.split(/\r?\n/);
+
+    const result: string[] = [];
+    let currentChunk = '';
+
+    // Regex to detect lines that start with:
+    //   1. or 1) or 2. or 2) etc.
+    //   e.g. "^\d+(\.|\))\s+"
+    const orderedListRegex = /^[0-9]+(\.|\))\s+/;
+
+    for (const line of lines) {
+      // Trim left for consistency (optional, if you want exact line starts)
+      const trimmedLine = line.trimStart();
+
+      // Check if this line starts with an ordered-list pattern
+      if (orderedListRegex.test(trimmedLine)) {
+        // If we already have text in currentChunk, push it to results
+        if (currentChunk.trim()) {
+          result.push(currentChunk.trimEnd());
+        }
+        // Start a new chunk with this line
+        currentChunk = line;
+      } else {
+        // Continue adding lines to the current chunk
+        if (currentChunk.length === 0) {
+          // If it's the first line in the chunk
+          currentChunk = line;
+        } else {
+          currentChunk += '\n' + line;
+        }
+      }
+    }
+
+    // Push any leftover chunk
+    if (currentChunk.trim()) {
+      result.push(currentChunk.trimEnd());
+    }
+
+    return result;
+  }
+
   // Textarea ID for referencing
   let textareaId = `editor-${Math.random().toString(36).substring(2, 11)}`;
 
@@ -70,6 +124,7 @@
 
   // Push a new state to the history
   function pushHistory(newState: string) {
+    if (newState.length < 0) return;
     // If user did partial redo, drop subsequent states
     if (historyIndex < history.length - 1) {
       history = history.slice(0, historyIndex + 1);
@@ -82,7 +137,7 @@
   function undo() {
     if (historyIndex > 0) {
       historyIndex--;
-      content.set(history[historyIndex]);
+      userInput = history[historyIndex];
     }
   }
 
@@ -90,34 +145,23 @@
   function redo() {
     if (historyIndex < history.length - 1) {
       historyIndex++;
-      content.set(history[historyIndex]);
+      userInput = history[historyIndex];
     }
   }
 
-  /**
-   * 2) Update lines => content => lines
-   */
-  $: if ($markdownLines) {
-    reRenderLines();
-    content.set($markdownLines.join('\n'));
-  }
-
   $: if ($content) {
-    markdownLines.set($content.split('\n'));
+    markdownLines.set(splitByOrderedList($content));
+    reRenderLines();
   }
 
   // The rendered result for each line
   let renderedLines: Writable<string[]> = writable([]);
 
-  function isListMarkdown(line: string): boolean {
-    return /^[0-9]+(\.|\))\s/.test(line) || /^[-*+]\s/.test(line);
-  }
-
   async function reRenderLines() {
     const linesArray = $markdownLines;
     const result: string[] = [];
     for (let line of linesArray) {
-      let rline = isListMarkdown(line) ? line : await parseMarkdown(line);
+      let rline = await parseMarkdown(line);
       result.push(rline);
     }
     renderedLines.set(result);
@@ -128,19 +172,15 @@
   /**
    * 4) Whenever content changes (typing, transforms) => push to undo history
    */
-  $: if ($content) {
-    pushHistory($content);
+  $: if (userInput) {
+    pushHistory(userInput);
   }
 
   /**
    * Add a new line using the chosen transform
    */
   function addLine() {
-    if (!userInput.trim()) return;
-    const option = markdownOptions.find((o) => o.label === selectedOption);
-    let transformed = userInput.trim();
-    if (option) transformed = option.transform(transformed);
-    markdownLines.update((lines) => [...lines, transformed]);
+    content.update((c) => `${c}\n${userInput}`);
     selectedOption = '';
     userInput = '';
   }
@@ -169,6 +209,7 @@
 
   function removeLine(index: number) {
     markdownLines.update((lines) => lines.filter((_, i) => i !== index));
+    content.set($markdownLines.join('\n'));
   }
 
   function openModal(type: 'link' | 'image') {
@@ -205,11 +246,11 @@
     if (!textarea) return;
 
     const { selectionStart, selectionEnd } = textarea;
-    const before = $content.substring(0, selectionStart);
-    const selected = $content.substring(selectionStart, selectionEnd);
-    const after = $content.substring(selectionEnd);
+    const before = userInput.substring(0, selectionStart);
+    const selected = userInput.substring(selectionStart, selectionEnd);
+    const after = userInput.substring(selectionEnd);
 
-    content.set(before + formatFn(selected) + after);
+    userInput = before + formatFn(selected) + after;
     textarea.focus();
   }
 
@@ -222,7 +263,7 @@
   function adjustHeight(event: Event) {
     const el = event.target as HTMLTextAreaElement;
     if (!el) return;
-	console.log(`Scroll Height: ${el.scrollHeight}`);
+    console.log(`Scroll Height: ${el.scrollHeight}`);
     el.style.height = '';
     el.style.height = `${el.scrollHeight}px`;
   }
@@ -246,23 +287,29 @@
             </div>
           {:else}
             <!-- Display mode for this line -->
-            <div class="flex grow gap-2">
+            <div class="flex items-center gap-2 w-full">
+              <div
+                class="bg-primary flex h-8 w-8 shrink-0 items-center justify-center rounded-full font-semibold text-white"
+                aria-label="Line Number"
+              >
+                {index + 1}
+              </div>
               <span
-                class="grow"
+                class="grow cursor-pointer"
                 on:dblclick={() => startEditing(index)}
                 role="button"
                 tabindex="-1"
               >
-			  {@html $renderedLines[index]}
-			</span>
+                {@html $renderedLines[index]}
+              </span>
+              <button
+                type="button"
+                class="text-danger shrink-0 self-center cursor-pointer"
+                on:click={() => removeLine(index)}
+              >
+                <TrashIcon />
+              </button>
             </div>
-            <button
-              type="button"
-              class="text-danger self-center"
-              on:click={() => removeLine(index)}
-            >
-              <TrashIcon />
-            </button>
           {/if}
         </li>
       {/each}
@@ -270,59 +317,45 @@
   {/if}
 
   <!-- Add new line form -->
-  <div class="mb-4 mt-4 flex flex-col items-end gap-2 md:flex-row">
-    <select class="input w-full md:w-auto" bind:value={selectedOption}>
-      <option value="" disabled selected>Select Markdown Format</option>
-      {#each markdownOptions as option}
-        <option value={option.label}>
-          {option.emoji}
-          {option.label}
-        </option>
-      {/each}
-    </select>
-    <input type="text" class="input grow" bind:value={userInput} placeholder="Enter text or URL" />
-    <Button on:click={addLine}>Add Line</Button>
-</div>
-<div class="m-4">
-	<hr/>
-</div>
-  <!-- Edit/Preview Container -->
-  <div class="editor-container">
-    <!-- Toolbar -->
-    <div class="toolbar">
-      {#if !preview}
-        {#each markdownOptions as option}
-          <button type="button" on:click={() => formatText(option.transform)}>
-            {option.emoji}
-            {option.label}
-          </button>
-        {/each}
-        <button type="button" on:click={undo} title="Undo">↩️ Undo</button>
-        <button type="button" on:click={redo} title="Redo">↪️ Redo</button>
-        <button type="button" on:click={() => openModal('link')}>🔗 Link</button>
-        <button type="button" on:click={() => openModal('image')}>🖼 Image</button>
+  <div class="mt-4 mb-4 flex flex-col items-end gap-2 md:flex-row">
+    <!-- Edit/Preview Container -->
+    <div class="editor-container">
+      <!-- Markdown Editor or Preview -->
+      {#if preview}
+        <!-- Show combined rendered preview -->
+        <div class="prose">
+          {@html combinedRenderedMarkdown}
+        </div>
+        <div class="flex gap-2">
+          <Button on:click={() => (preview = !preview)}>Edit</Button>
+        </div>
+      {:else}
+        <!-- Toolbar -->
+        <div class="toolbar">
+          {#each markdownOptions as option}
+            <button type="button" on:click={() => formatText(option.transform)}>
+              {option.emoji}
+              {option.label}
+            </button>
+          {/each}
+          <button type="button" on:click={undo} title="Undo">↩️ Undo</button>
+          <button type="button" on:click={redo} title="Redo">↪️ Redo</button>
+          <button type="button" on:click={() => openModal('link')}>🔗 Link</button>
+          <button type="button" on:click={() => openModal('image')}>🖼 Image</button>
+        </div>
+        <textarea
+          id={textareaId}
+          class="input"
+          bind:value={userInput}
+          on:input={adjustHeight}
+          style="min-height: 100px;"
+        ></textarea>
+        <div class="flex gap-2">
+          <Button on:click={addLine}>Save</Button>
+          <Button on:click={() => (preview = !preview)}>Preview</Button>
+        </div>
       {/if}
-
-      <button type="button" on:click={() => (preview = !preview)}>
-        {preview ? '📄 Edit' : '🖥️ Preview'}
-      </button>
     </div>
-
-    <!-- Markdown Editor or Preview -->
-    {#if preview}
-      <!-- Show combined rendered preview -->
-      <div class="prose">
-        {@html combinedRenderedMarkdown}
-      </div>
-    {:else}
-      <textarea
-        id={textareaId}
-        class="input"
-        bind:value={$content}
-        on:input={adjustHeight}
-        style="min-height: 250px;"
-      ></textarea>
-    {/if}
   </div>
 </div>
 
@@ -393,6 +426,6 @@
     resize: vertical;
     outline: none;
     line-height: 1.4;
-	field-sizing: content;
-}
+    field-sizing: content;
+  }
 </style>

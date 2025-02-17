@@ -38,7 +38,6 @@
   let cooktime = '';
   let servings = '';
   let ingredientsArray: Writable<Array<[string, string]>> = writable([]);
-  let directionsArray: Writable<string[]> = writable([]);
   let directions = writable('');
   let disablePublishButton = false;
   let resultMessage = '';
@@ -109,7 +108,6 @@
     if (event) {
       if (event.content) {
         directions.update((e) => event.content);
-        directionsArray.set(event?.content.split('\n') ?? []);
         let titleTagValue = event.tags.find((e) => e[0] == 'title')?.[1];
         if (titleTagValue) title = titleTagValue;
         let summaryTagValue = event.tags.find((e) => e[0] == 'summary')?.[1];
@@ -164,10 +162,10 @@
   }
 
   async function loadPreview() {
-    if (browser && $images.length > 0 && $directionsArray.length > 0) {
+    if (browser && $images.length > 0 && $directions.length > 0) {
       previewEvent = new NDKEvent($ndk);
       previewEvent.kind = 35000;
-      previewEvent.content = $directionsArray.join('\n');
+      previewEvent.content = $directions;
       previewEvent.tags.push(['d', title.toLowerCase().replaceAll(' ', '-')]);
       previewEvent.tags.push(['title', title]);
       if (preptime !== '') previewEvent.tags.push(['prep_time', preptime]);
@@ -189,10 +187,10 @@
     try {
       if ($images.length == 0) {
         resultMessage = `Error: No Image Uploaded`;
-      } else if ($directionsArray.length > 0) {
+      } else if ($directions.length > 0) {
         const event = new NDKEvent($ndk);
         event.kind = 35000;
-        event.content = $directionsArray.join('\n');
+        event.content = $directions;
         event.tags.push(['d', title.toLowerCase().replaceAll(' ', '-')]);
         event.tags.push(['title', title]);
         if (preptime !== '') {
@@ -351,7 +349,7 @@
 
   <div class="flex flex-col gap-2">
     <h3>Directions*</h3>
-    <MarkdownEditor markdownLines={directionsArray} />
+    <MarkdownEditor content={directions} />
   </div>
 
   <div>
@@ -367,7 +365,7 @@
     >
   </div>
 
-  {#if $images.length > 0 && title && $selectedTags.length > 0 && $directionsArray.length > 0 && $ingredientsArray.length > 0}
+  {#if $images.length > 0 && title && $selectedTags.length > 0 && $directions.length > 0 && $ingredientsArray.length > 0}
     <div class="flex flex-col gap-2">
       <h2>Card Preview</h2>
       <div>
