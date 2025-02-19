@@ -234,9 +234,9 @@
           'wss://relay.nostrsf.org'
         ]);
 		*/
-        console.log('event to publish:', event.toNostrEvent());
+        console.log('event to publish:', await event.toNostrEvent());
         let relays = await event.publish();
-        resultMessage = 'Succes!';
+        resultMessage = 'Success!';
         relays.forEach((relay) => {
           relay.once('published', () => {
             console.log('published to', relay);
