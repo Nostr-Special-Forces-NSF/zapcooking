@@ -6,6 +6,7 @@
   import { slide } from 'svelte/transition';
   import MarkdownToolbar from './MarkdownToolbar.svelte';
 
+  export let isEditing: boolean = false;
   export let content: Writable<string>;
   let markdownLines: Writable<string[]> = writable(splitByOrderedList($content));
 
@@ -25,7 +26,6 @@
 
   let preview = false; // Toggles preview mode
 
-  const orderedListRegex = /^[0-9]+(\.|\))\s+/;
   /**
    * Splits a Markdown string into an array of "chunks," starting a new chunk
    * whenever a line begins with a typical ordered-list pattern like "1. " or "2) ".
@@ -47,10 +47,11 @@
     // Regex to detect lines that start with:
     //   1. or 1) or 2. or 2) etc.
     //   e.g. "^\d+(\.|\))\s+"
-    const orderedListRegex = /^[0-9]+(\.|\))\s+/;
+    const orderedListRegex = /^[0-9]+(\.|\))/;
+
     for (const line of lines) {
       // Trim left for consistency (optional, if you want exact line starts)
-      const trimmedLine = line.trimStart();
+      const trimmedLine = line;
       // Check if this line starts with an ordered-list pattern
       if (orderedListRegex.test(trimmedLine)) {
         // If we already have text in currentChunk, push it to results
@@ -95,18 +96,27 @@
 
   function startEditing(index: number) {
     editingIndex = index;
-    editingValue.set($markdownLines[index] || '');
+    editingValue.set($markdownLines[index].trim() || '');
   }
 
   function saveEditing() {
     if (editingIndex === null) return;
+
+    const orderedListRegex = /^[0-9]+(\.|\))\s+/;
+    let addLine = $editingValue.split('\n');
+    const newLine = addLine.map((l, i) =>
+      orderedListRegex.test(l) ? (i > 0 ? `    ${l}` : l) : i > 0 ? l : `${editingIndex! + 1}. ${l}`
+    );
+    console.log(newLine);
+
     markdownLines.update((lines) => {
       const updated = [...lines];
-      updated[editingIndex!] = $editingValue;
+      updated[editingIndex!] = newLine.join('\n');
       return updated;
     });
+
     // Reconstruct the entire content
-    const newLines = get(markdownLines).join('\n');
+    const newLines = $markdownLines.join('\n');
     content.set(newLines);
     editingIndex = null;
     editingValue.set('');
@@ -121,8 +131,19 @@
    * Add a new line using the chosen transform
    */
   function addLine() {
-	const newLine = orderedListRegex.test($userInput) ? $userInput : `${$markdownLines.length + 1.}. ${$userInput}`;
-    content.update((c) => `${c}\n${newLine}`);
+    const orderedListRegex = /^[0-9]+(\.|\))\s+/;
+    let addLine = $userInput.split('\n');
+    const newLine = addLine.map((l, i) =>
+      orderedListRegex.test(l)
+        ? i > 0
+          ? `    ${l}`
+          : l
+        : i > 0
+          ? l
+          : `${$markdownLines.length + 1}. ${l}`
+    );
+    console.log(newLine);
+    content.update((c) => `${c}\n${newLine.join('\n')}`);
     userInput.set('');
   }
 
@@ -136,12 +157,12 @@
 <div class="mb-0">
   <!-- Existing lines (each line is editable) -->
   {#if $markdownLines.length > 0}
-    <ul class="flex flex-col gap-2">
+    <ul class="direction-steps flex flex-col gap-2">
       {#each $markdownLines as line, index}
         <li class="input flex items-start" transition:slide|global={{ duration: 300 }}>
           {#if editingIndex === index}
             <!-- Edit mode for this line -->
-            <div class="flex grow flex-col gap-2" bind:this={editingContainer}>
+            <div class="editor-container" bind:this={editingContainer}>
               <MarkdownToolbar content={editingValue} textareaId={'editing-area-' + index} />
               <textarea
                 class="input h-auto w-full"
@@ -157,18 +178,12 @@
           {:else}
             <!-- Display mode for this line -->
             <div class="flex w-full items-center gap-2">
-              <div
-                class="bg-primary flex h-8 w-8 shrink-0 items-center justify-center rounded-full font-semibold text-white"
-                aria-label="Line Number"
-              >
-                {index + 1}
-              </div>
               <span
-                class="grow cursor-pointer"
+                class="step-preview grow cursor-pointer"
                 on:dblclick={() => startEditing(index)}
                 role="button"
                 tabindex="-1"
-				title="Double Click to edit Direction Step"
+                title="Double Click to edit Direction Step"
               >
                 {@html $renderedLines[index]}
               </span>
@@ -176,7 +191,7 @@
                 type="button"
                 class="text-danger shrink-0 cursor-pointer self-center"
                 on:click={() => removeLine(index)}
-				title="Delete Direction Step"
+                title="Delete Direction Step"
               >
                 <TrashIcon />
               </button>

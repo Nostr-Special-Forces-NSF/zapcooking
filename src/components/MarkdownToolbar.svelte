@@ -7,7 +7,7 @@
     TextItalic,
     TextStrikethrough,
     ListNumbers,
-	ListBullets,
+    ListBullets,
     Quotes,
     Link,
     Image,
@@ -20,7 +20,7 @@
     ArrowCounterClockwise,
     ArrowClockwise,
     Minus,
-    CheckSquare,
+    CheckSquare
   } from 'phosphor-svelte';
   import { faUndo, faRedo, faMinus } from '@fortawesome/free-solid-svg-icons';
 
@@ -95,11 +95,11 @@
     },
 
     // Lists
-    { icon: ListNumbers, tooltip: 'Ordered List', transform: (text: string) => `1. ${text}` },
-    { icon: ListBullets, tooltip: 'Unordered List', transform: (text: string) => `- ${text}` },
-    { icon: CheckSquare, tooltip: 'Task List', transform: (text: string) => `- [ ] ${text}` },
-	
-	// Layout
+    { icon: ListNumbers, tooltip: 'Ordered List', transform: (text: string) => `    1. ${text}` },
+    { icon: ListBullets, tooltip: 'Unordered List', transform: (text: string) => `    - ${text}` },
+    { icon: CheckSquare, tooltip: 'Task List', transform: (text: string) => `    - [ ] ${text}` },
+
+    // Layout
     { icon: Minus, faIcon: faMinus, tooltip: 'Horizontal Rule', transform: () => `---` },
     {
       icon: Table,
@@ -165,7 +165,7 @@
 
 <div class="toolbar">
   <!-- Undo/Redo -->
-  <button type="button" on:click={undo} title="Undo" ><ArrowCounterClockwise/></button>
+  <button type="button" on:click={undo} title="Undo"><ArrowCounterClockwise /></button>
   <button type="button" on:click={redo} title="Redo"><ArrowClockwise /></button>
 
   <!-- Markdown transformations -->
@@ -176,7 +176,7 @@
   {/each}
 
   <!-- Link & Image Modals -->
-  <button type="button" on:click={() => openModal('link')} title="Insert Link"><Link/></button>
+  <button type="button" on:click={() => openModal('link')} title="Insert Link"><Link /></button>
   <button type="button" on:click={() => openModal('image')} title="Insert Image"><Image /></button>
 </div>
 

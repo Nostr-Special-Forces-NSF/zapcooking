@@ -156,7 +156,7 @@
 <!-- Add a new item form -->
 <form on:submit|preventDefault={addNutrition} class="flex flex-col gap-2 md:flex-row md:items-end">
   <!-- Choose a type that hasn't been used yet -->
-  <select class="input w-full md:w-auto" bind:value={newTypeKey}>
+  <select class="input w-full grow md:w-auto" bind:value={newTypeKey}>
     <option value="" disabled selected>Select a Nutrition Type</option>
     {#each nutritionTypes as nt}
       {#if !$nutritionValues[nt.key]}
@@ -171,10 +171,10 @@
   <!-- Input for the new value -->
   <input
     type="text"
-    class="input w-full md:w-auto"
+    class="input w-full grow md:w-auto"
     bind:value={newValue}
     placeholder="Value (e.g. '200 kcal')"
   />
 
-  <button type="submit" class="btn md:ml-2">Add</button>
+  <Button type="submit" class="btn md:ml-2">Add</Button>
 </form>

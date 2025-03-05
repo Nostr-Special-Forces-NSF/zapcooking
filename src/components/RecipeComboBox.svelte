@@ -55,7 +55,7 @@
 
 <div class="mb-0 flex flex-col gap-2">
   <select
-    class="bg-input flex rounded-xl border-none p-3"
+    class="input flex rounded-xl border-none p-3"
     id="recipe-select"
     on:change={handleSelection}
     disabled={$loading}

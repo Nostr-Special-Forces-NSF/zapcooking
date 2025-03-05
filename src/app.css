@@ -7,8 +7,8 @@
 @source './**/*.{html,js,svelte,ts,css}';
 
 @theme {
-  --font-sans: Geist, ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji',
-    'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
+  --font-sans: Geist, ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
+    'Segoe UI Symbol', 'Noto Color Emoji';
 
   --color-primary: #ec4700;
   --color-danger: #ff3535;
@@ -54,14 +54,99 @@
   h1 {
     @apply text-2xl font-semibold tracking-tight md:text-3xl;
   }
+
   h2 {
     @apply text-xl font-semibold tracking-tight md:text-2xl;
   }
+
   h3 {
     @apply text-lg font-semibold tracking-tight md:text-xl;
   }
+
   .recipe-card-image {
     @apply relative aspect-auto h-[237px] w-[160px] cursor-pointer overflow-hidden rounded-2xl bg-cover bg-center object-cover before:animate-pulse;
   }
+
+  .direction-steps {
+    counter-reset: circle;
+  }
+
+  .step-preview > ol {
+    counter-increment: circle;
+    @apply list-none;
+  }
+
+  .step-preview > ol > li {
+    @apply relative mb-3 list-inside pl-12;
+  }
+
+  .step-preview > ul {
+    @apply list-inside list-disc;
+  }
+
+  .step-preview > ul > li {
+    @apply relative mb-3 pl-8;
+  }
+
+  .step-preview > ol > li,
+  .step-preview > ul > li {
+    @apply relative mb-3 pl-12;
+  }
+
+  .step-preview {
+    ol,
+    ul {
+      li > ol {
+        @apply list-inside list-decimal;
+      }
+      li > ul {
+        @apply list-inside list-disc;
+      }
+      li > input {
+        @apply list-inside;
+      }
+      li:has(input[type='checkbox']) {
+        list-style: none;
+      }
+      li > a:link {
+        text-decoration: underline;
+      }
+    }
+
+    blockquote {
+      @apply mt-4 mb-4 ml-12 border-l-4 italic;
+      border-color: var(--color-primary, currentColor);
+      p {
+        @apply ml-5;
+      }
+    }
+
+    table {
+      @apply w-auto border-collapse;
+      margin: 1rem 0;
+    }
+
+    th,
+    td {
+      @apply pl-12;
+    }
+  }
+
+  .step-preview > ol > li::before {
+    content: counter(circle);
+    @apply absolute top-0 left-0 flex h-8 w-8 items-center justify-center rounded-full font-semibold text-white;
+    background-color: theme('colors.primary');
+    top: 50%;
+    transform: translateY(-50%);
+  }
+
+  .step-preview p,
+  .step-preview h1,
+  .step-preview h2,
+  .step-preview h3,
+  .step-preview h1,
+  .step-preview hr,
+  .step-preview pre {
+    @apply ml-12;
+  }
 }
-z

@@ -22,6 +22,8 @@
   import { CopySimple } from 'phosphor-svelte';
   import { parseMarkdown } from '$lib/marked';
   import ImageCarousel from '../ImageCarousel.svelte';
+  import RecipeCard from '../RecipeCard.svelte';
+  import { mount } from 'svelte';
 
   export let event: NDKEvent;
   export let embeddedRecipes: NDKEvent[];
@@ -39,6 +41,8 @@
   let dropdownActive = false;
   let recipeContent = '';
   let embeddedRecipeContent: string[] = [];
+
+  let container: HTMLDivElement;
 
   let listsArr: NDKEvent[] = [];
   async function getLists(): Promise<NDKEvent[]> {
@@ -155,7 +159,20 @@
       recipeContent = await parseMarkdown(event.content);
       const contentPromise = embeddedRecipes.map(async (e) => await parseMarkdown(e.content));
       embeddedRecipeContent = await Promise.all(contentPromise);
+      setTimeout(mountRecipeCards, 0);
     })();
+  }
+
+  function mountRecipeCards() {
+    const placeholders = container.querySelectorAll('.recipe-card-placeholder');
+    placeholders.forEach((placeholder) => {
+      const naddr = placeholder.getAttribute('data-naddr');
+      const userName = placeholder.getAttribute('data-username');
+      mount(RecipeCard, {
+        target: placeholder,
+        props: { event }
+      });
+    });
   }
 </script>
 
@@ -369,7 +386,9 @@
             {/each}
           {/if}
         {/if}
-        {@html recipeContent}
+        <div bind:this={container}>
+          {@html recipeContent}
+        </div>
       </div>
       {#if embeddedRecipes.length > 0}
         <div class="flex flex-col gap-2">

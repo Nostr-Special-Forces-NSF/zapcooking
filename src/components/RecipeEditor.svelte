@@ -46,6 +46,9 @@
   let toolValues: Writable<recipeTagSimple[]> = writable([]);
   let dietValues: Writable<recipeTagSimple[]> = writable([]);
 
+  let mEditor: MarkdownEditor;
+  let mIngredients: TupleComboBox;
+
   function normalizeCase(input: string): string {
     return input.replace(/([a-z])([A-Z])/g, '$1_$2').toLowerCase();
   }
@@ -184,6 +187,7 @@
 
   async function publishRecipe() {
     disablePublishButton = true;
+    console.log(mIngredients?.isEditing);
     try {
       if ($images.length == 0) {
         resultMessage = `Error: No Image Uploaded`;
@@ -235,6 +239,7 @@
         ]);
 		*/
         console.log('event to publish:', await event.toNostrEvent());
+
         let relays = await event.publish();
         resultMessage = 'Success!';
         relays.forEach((relay) => {
@@ -335,6 +340,7 @@
       showIndex={false}
       amountPlaceholder="Quantity (e.g., 1 cup)"
       ingredientPlaceholder="Item (e.g., flour)"
+      bind:this={mIngredients}
     />
   </div>
 
@@ -349,7 +355,7 @@
 
   <div class="flex flex-col gap-2">
     <h3>Directions*</h3>
-    <MarkdownEditor content={directions} />
+    <MarkdownEditor content={directions} bind:this={mEditor} />
   </div>
 
   <div>

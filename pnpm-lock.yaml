@@ -21,8 +21,8 @@ importers:
         specifier: ^2.5.9
         version: 2.5.9(typescript@5.7.3)
       '@nostr-dev-kit/ndk-svelte-components':
-        specifier: ^2.3.6
-        version: 2.3.6(postcss-load-config@6.0.1(jiti@2.4.2)(postcss@8.5.1)(yaml@2.7.0))(postcss@8.5.1)(svelte@5.19.7)(typescript@5.7.3)(vite@6.1.0(@types/node@18.19.75)(jiti@2.4.2)(lightningcss@1.29.1)(yaml@2.7.0))
+        specifier: ^2.3.9
+        version: 2.3.9(postcss-load-config@6.0.1(jiti@2.4.2)(postcss@8.5.1)(yaml@2.7.0))(postcss@8.5.1)(svelte@5.19.7)(typescript@5.7.3)(vite@6.1.0(@types/node@18.19.75)(jiti@2.4.2)(lightningcss@1.29.1)(yaml@2.7.0))
       '@svelte-put/qr':
         specifier: ^2.1.0
         version: 2.1.0(svelte@5.19.7)
@@ -469,13 +469,17 @@ packages:
   '@nostr-dev-kit/ndk-cache-dexie@2.5.9':
     resolution: {integrity: sha512-SZ5FjON0QPekiC7oW9Hy3JQxG0Oxxtud9LBa1q/A49JV/Qppv1x37nFHxi0XLxEbDgFTNYbaN27Zjfp2NPem2g==}
 
-  '@nostr-dev-kit/ndk-svelte-components@2.3.6':
-    resolution: {integrity: sha512-QueOWR5AmgVJxF30lwDj98xus8vTEz5snAxtR71GYj9vWyOAbPnpVq9+UzfXcmNhKTsol5IqMqhdA1N4GKeQaQ==}
+  '@nostr-dev-kit/ndk-svelte-components@2.3.9':
+    resolution: {integrity: sha512-LNnhVKRLtVACzXG8r06OGRq6wLwZ75Ew4CepKdVN6zxRMErQT4ZxpL1kufiRfj6ppdo+jefVSCy0F5LKNqX/BQ==}
     peerDependencies:
       svelte: ^4.2.0
 
   '@nostr-dev-kit/ndk@2.11.0':
     resolution: {integrity: sha512-FKIMtcVsVcquzrC+yir9lOXHCIHmQ3IKEVCMohqEB7N96HjP2qrI9s5utbjI3lkavFNF5tXg1Gp9ODEo7XCfLA==}
+    engines: {node: '>=16'}
+
+  '@nostr-dev-kit/ndk@2.12.0':
+    resolution: {integrity: sha512-B9NKdgn9CKNn0WHIFzj7SxeZhr+daT5im/ozj9Ey791MkaZiTB5XUCy5j9O15FDHTyFy0/gpCyq7LvJKIxCOoA==}
     engines: {node: '>=16'}
 
   '@npmcli/agent@3.0.0':
@@ -2715,9 +2719,9 @@ snapshots:
       - supports-color
       - typescript
 
-  '@nostr-dev-kit/ndk-svelte-components@2.3.6(postcss-load-config@6.0.1(jiti@2.4.2)(postcss@8.5.1)(yaml@2.7.0))(postcss@8.5.1)(svelte@5.19.7)(typescript@5.7.3)(vite@6.1.0(@types/node@18.19.75)(jiti@2.4.2)(lightningcss@1.29.1)(yaml@2.7.0))':
+  '@nostr-dev-kit/ndk-svelte-components@2.3.9(postcss-load-config@6.0.1(jiti@2.4.2)(postcss@8.5.1)(yaml@2.7.0))(postcss@8.5.1)(svelte@5.19.7)(typescript@5.7.3)(vite@6.1.0(@types/node@18.19.75)(jiti@2.4.2)(lightningcss@1.29.1)(yaml@2.7.0))':
     dependencies:
-      '@nostr-dev-kit/ndk': 2.11.0(typescript@5.7.3)
+      '@nostr-dev-kit/ndk': 2.12.0(typescript@5.7.3)
       '@sveltejs/vite-plugin-svelte': 3.1.2(svelte@5.19.7)(vite@6.1.0(@types/node@18.19.75)(jiti@2.4.2)(lightningcss@1.29.1)(yaml@2.7.0))
       classnames: 2.5.1
       lucide-svelte: 0.451.0(svelte@5.19.7)
@@ -2749,6 +2753,23 @@ snapshots:
       - vite
 
   '@nostr-dev-kit/ndk@2.11.0(typescript@5.7.3)':
+    dependencies:
+      '@noble/curves': 1.8.1
+      '@noble/hashes': 1.7.1
+      '@noble/secp256k1': 2.2.3
+      '@scure/base': 1.2.4
+      debug: 4.4.0
+      light-bolt11-decoder: 3.2.0
+      nostr-tools: 2.10.4(typescript@5.7.3)
+      tseep: 1.3.1
+      typescript-lru-cache: 2.0.0
+      utf8-buffer: 1.0.0
+      websocket-polyfill: 0.0.3
+    transitivePeerDependencies:
+      - supports-color
+      - typescript
+
+  '@nostr-dev-kit/ndk@2.12.0(typescript@5.7.3)':
     dependencies:
       '@noble/curves': 1.8.1
       '@noble/hashes': 1.7.1
